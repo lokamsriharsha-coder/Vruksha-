@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vruksha — Rent a Mango Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Noto+Sans+Telugu&family=Noto+Sans+Kannada&family=Noto+Sans+Tamil&family=Noto+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--gd:#1b3a08;--gm:#2e6010;--gl:#5a9e1a;
+--cream:#fafaf7;--white:#ffffff;
+--sf:#c8650a;--sfl:#e8970c;
+--ink:#111108;--mid:#3d3a28;--muted:#7a7560;--faint:#e8e5d8;
+--red:#962020;
+--radius:18px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;}
+
+/* STRIP */
+.strip{
+background:var(--gd);
+position:fixed;top:0;left:0;right:0;z-index:300;
+display:flex;flex-direction:column;
+}
+.strip-brand{
+border-bottom:1px solid rgba(255,255,255,.07);
+}
+.strip-price{display:flex;align-items:baseline;gap:.5rem}
+.strip-price-row{
+padding:.4rem 1.5rem;
+display:flex;align-items:center;justify-content:center;
+gap:1.2rem;flex-wrap:wrap;
+}
+
+/* ₹1,499 — clean amber glow pulse */
+.strip-now{
+font-family:'Playfair Display',serif;
+font-size:1.25rem;font-weight:700;
+color:#fff;
+animation:amberGlow 2.5s ease-in-out infinite;
+}
+@keyframes amberGlow{
+0%,100%{
+color:#fff;
+text-shadow:
+0 0 10px rgba(255,180,30,1),
+0 0 25px rgba(232,140,0,.9),
+0 0 50px rgba(200,100,0,.6);
+}
+50%{
+color:rgba(255,255,255,.8);
+text-shadow:
+0 0 4px rgba(255,180,30,.4),
+0 0 10px rgba(232,140,0,.3);
+}
+}
+
+/* ₹2,999 — red line draws from RIGHT to LEFT once on load */
+.strip-was{
+font-size:.85rem;
+color:rgba(255,255,255,.32);
+text-decoration:none;
+position:relative;
+display:inline-block;
+}
+.strip-was::after{
+content:'';
+position:absolute;
+top:47%;
+right:0;
+width:100%;
+height:1.5px;
+background:#e03535;
+box-shadow:0 0 6px rgba(224,53,53,.9), 0 0 12px rgba(224,53,53,.4);
+transform-origin:right center;
+animation:strikeLoop 2s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes strikeLoop{
+0%   { transform:scaleX(0); transform-origin:right center; opacity:0; }
+5%   { opacity:1; }
+45%  { transform:scaleX(1); transform-origin:right center; opacity:1; }
+55%  { transform:scaleX(1); transform-origin:right center; opacity:1; }
+80%  { transform:scaleX(0); transform-origin:left center;  opacity:.5; }
+100% { transform:scaleX(0); transform-origin:right center; opacity:0; }
+}
+
+.strip-sep{color:rgba(255,255,255,.18)}
+.strip-copy{font-size:.78rem;color:rgba(255,255,255,.6)}
+
+/* ₹199 — same amber glow, offset by 1.2s so they pulse out of phase */
+.strip-copy strong{
+color:#fff;
+animation:amberGlow 2.5s ease-in-out 1.2s infinite;
+}
+
+.strip-badge{
+background:var(--sf);color:#fff;
+font-size:.68rem;font-weight:600;
+letter-spacing:.06em;
+padding:.2rem .75rem;border-radius:2rem;white-space:nowrap;
+}
+
+/* NAV */
+nav{background:rgba(250,250,247,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--faint);position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:.8rem 3rem;box-shadow:0 2px 12px rgba(27,58,8,.06)}
+
+/* LOGO */
+.logo{
+text-decoration:none;
+display:inline-flex;
+align-items:baseline;
+gap:.22rem;
+line-height:1;
+}
+.logo-fixed{
+font-family:'Cormorant Garamond',serif;
+font-size:1.55rem;
+font-weight:700;
+color:var(--gd);
+letter-spacing:.02em;
+line-height:1;
+}
+.logo-emoji-wrap{
+position:relative;
+display:inline-block;
+width:1.1rem;
+height:1.1rem;
+margin:0 .1rem;
+vertical-align:middle;
+}
+.logo-emoji{
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:.88rem;
+line-height:1;
+transform-origin:50% 10%;
+opacity:0;
+transition:none;
+}
+.logo-emoji.e-active{
+opacity:1;
+animation:emojiHang 4.5s ease-in-out infinite, emojiFadeIn .5s cubic-bezier(.22,1,.36,1) forwards;
+}
+.logo-emoji.e-exit{
+animation:emojiFadeOut .4s cubic-bezier(.55,0,1,.45) forwards;
+}
+@keyframes emojiHang{
+0%,100%{transform:rotate(-8deg)}
+25%    {transform:rotate(0deg) scale(1.1)}
+50%    {transform:rotate(8deg)}
+75%    {transform:rotate(0deg) scale(1.1)}
+}
+@keyframes emojiFadeIn{
+from{opacity:0;transform:rotate(-8deg) scale(.7)}
+to  {opacity:1;transform:rotate(-8deg) scale(1)}
+}
+@keyframes emojiFadeOut{
+from{opacity:1}
+to  {opacity:0;transform:scale(.6) translateY(-4px)}
+}
+
+/* FLIP WORD ANIMATION — split-flap style */
+.logo-flip-wrap{
+display:inline-block;
+position:relative;
+overflow:hidden;
+height:1.08rem;
+vertical-align:baseline;
+min-width:4.5rem;
+perspective:400px;
+}
+/* each word sits absolutely stacked */
+.logo-flip-word{
+position:absolute;
+left:0;
+bottom:0;
+font-family:'Noto Sans Telugu','Noto Sans Kannada','Noto Sans Tamil','Noto Sans Devanagari','Noto Sans','Inter',sans-serif;
+font-size:.68rem;
+font-weight:600;
+color:var(--sf);
+letter-spacing:.05em;
+white-space:nowrap;
+line-height:1.08rem;
+transform-origin:50% 100%;
+transform:rotateX(90deg);
+opacity:0;
+pointer-events:none;
+backface-visibility:hidden;
+}
+.logo-flip-word.flip-in{
+animation:flipIn .55s cubic-bezier(.22,1,.36,1) forwards;
+}
+.logo-flip-word.flip-out{
+animation:flipOut .38s cubic-bezier(.55,0,1,.45) forwards;
+}
+@keyframes flipIn{
+0%  {transform:rotateX(90deg);opacity:0}
+100%{transform:rotateX(0deg);opacity:1}
+}
+@keyframes flipOut{
+0%  {transform:rotateX(0deg);opacity:1}
+100%{transform:rotateX(-90deg);opacity:0}
+}
+
+/* subtle underline bar under the language word */
+.logo-flip-word::after{
+content:'';
+position:absolute;
+bottom:-1px;left:0;right:0;
+height:1px;
+background:var(--sf);
+opacity:.35;
+transform:scaleX(0);
+transform-origin:left;
+transition:transform .4s ease .1s;
+}
+.logo-flip-word.flip-in::after{
+transform:scaleX(1);
+}
+
+.nav-links{display:flex;gap:2.2rem;list-style:none}
+.nav-links a{font-size:.78rem;color:var(--muted);text-decoration:none;letter-spacing:.04em;transition:color .2s}
+.nav-links a:hover{color:var(--gd)}
+.nav-reserve{background:var(--gd);color:#fff;font-size:.78rem;font-weight:500;padding:.45rem 1.1rem;border-radius:2rem;text-decoration:none;transition:background .2s}
+.nav-reserve:hover{background:var(--gm)}
+
+/* HERO */
+.hero{min-height:90vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:4rem 3rem 3rem;gap:4rem;background:var(--white);position:relative;overflow:hidden}
+.hero-bg-circle{position:absolute;right:-120px;top:-120px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(90,158,26,.07) 0%,transparent 70%);pointer-events:none}
+.hero-kicker{display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem}
+.kicker-dot{width:5px;height:5px;background:var(--gl);border-radius:50%;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.kicker-text{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gm)}
+.hero-origin{font-size:.68rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem;display:flex;align-items:center;gap:.45rem}
+.hero-origin-line{width:18px;height:1px;background:var(--faint);display:inline-block;flex-shrink:0}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2.8rem,4.5vw,4.2rem);line-height:1.08;color:var(--gd);margin-bottom:1.3rem;font-weight:700}
+.hero h1 em{font-style:italic;color:var(--sf);display:block}
+.hero-sub{font-size:1rem;color:var(--muted);line-height:1.85;max-width:400px;font-weight:300;margin-bottom:.8rem}
+.hero-delivery-note{font-size:.78rem;color:var(--muted);line-height:1.7;background:rgba(90,158,26,.06);border-left:2px solid var(--gl);padding:.6rem .9rem;border-radius:0 8px 8px 0;max-width:400px;margin-bottom:1.8rem}
+.hero-delivery-note strong{color:var(--gm);font-weight:500}
+.hero-ctas{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}
+.btn-cta{background:var(--gd);color:#fff;padding:.85rem 2rem;border-radius:3rem;font-size:.95rem;font-weight:500;text-decoration:none;transition:background .2s,transform .15s;display:inline-block}
+.btn-cta:hover{background:var(--gm);transform:translateY(-2px)}
+.btn-link{color:var(--sf);font-size:.9rem;text-decoration:none;font-weight:500;border-bottom:1px solid rgba(200,101,10,.3);padding-bottom:1px;transition:color .2s}
+.btn-link:hover{color:var(--gd)}
+
+/* MOSAIC */
+.mosaic{position:relative;height:540px}
+.m{position:absolute;border-radius:var(--radius);overflow:hidden;transition:transform .5s ease}
+.m img{width:100%;height:100%;object-fit:cover;display:block}
+.m:hover{transform:scale(1.02)}
+.ma{width:60%;height:52%;top:0;left:0}
+.mb{width:38%;height:45%;top:0;right:0}
+.mc{width:42%;height:47%;bottom:0;left:0}
+.md{width:56%;height:46%;bottom:0;right:0}
+
+/* PILOT BANNER — full dark green, Apple editorial */
+.pilot-banner{background:var(--gd);color:#fff;padding:3.5rem 3rem}
+.pilot-inner{max-width:680px;margin:0 auto}
+.pilot-eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,151,12,.75);margin-bottom:.8rem;font-weight:600}
+.pilot-heading{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.2vw,1.55rem);line-height:1.65;color:#fff;font-style:italic;margin-bottom:1rem;font-weight:400}
+.pilot-sub{font-size:.8rem;color:rgba(255,255,255,.48);line-height:1.75;max-width:540px;margin-bottom:1.5rem}
+/* SLOTS */
+.pilot-slots{display:flex;align-items:center;gap:.5rem;margin-bottom:.55rem;flex-wrap:wrap}
+.slot{width:34px;height:34px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:rgba(255,255,255,.4);font-weight:600;letter-spacing:.02em;transition:all .3s}
+.slot.taken{background:var(--sf);border:1.5px solid var(--sf);color:#fff}
+.pilot-slots-label{font-size:.7rem;color:rgba(255,255,255,.32);letter-spacing:.06em;text-transform:uppercase}
+
+/* SECTION */
+.section{padding:5rem 3rem;max-width:1200px;margin:0 auto}
+.eyebrow{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--sf);font-weight:600;margin-bottom:.5rem}
+.h2{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.6rem);color:var(--gd);line-height:1.15;margin-bottom:.6rem;font-weight:700}
+.lead{font-size:.95rem;color:var(--muted);line-height:1.85;max-width:500px;font-weight:300;margin-bottom:3rem}
+
+/* PRICING */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem;margin-bottom:2rem}
+.plan-card{background:var(--white);border:1px solid var(--faint);border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s}
+.plan-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(27,58,8,.1)}
+.plan-card.featured{border:2px solid var(--gm)}
+.plan-head{padding:1.8rem 1.8rem 1.2rem}
+.plan-badge{display:inline-block;background:rgba(90,158,26,.1);color:var(--gm);font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .65rem;border-radius:2rem;margin-bottom:.8rem}
+.plan-badge.hot{background:rgba(200,101,10,.1);color:var(--sf)}
+.plan-name{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gd);margin-bottom:.3rem;font-weight:700}
+.plan-sub{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem}
+.plan-price{display:flex;align-items:baseline;gap:.4rem;margin-bottom:.2rem}
+.plan-amount{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gd);font-weight:700;line-height:1}
+.plan-was{font-size:.9rem;color:var(--muted);text-decoration:line-through}
+.plan-per{font-size:.78rem;color:var(--muted)}
+.plan-savings{font-size:.72rem;color:var(--sf);font-weight:500;margin-bottom:1.2rem}
+.plan-body{padding:0 1.8rem 1.8rem}
+.plan-divider{height:1px;background:var(--faint);margin-bottom:1.2rem}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.4rem}
+.plan-features li{display:flex;align-items:flex-start;gap:.6rem;font-size:.85rem;color:var(--mid);line-height:1.5}
+.pf-dot{width:16px;height:16px;border-radius:50%;background:rgba(90,158,26,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:.55rem;color:var(--gm)}
+.plan-cta{display:block;text-align:center;padding:.75rem;border-radius:2rem;font-size:.88rem;font-weight:500;text-decoration:none;transition:all .2s}
+.plan-cta.primary{background:var(--gd);color:#fff}
+.plan-cta.primary:hover{background:var(--gm);transform:translateY(-1px)}
+.plan-cta.secondary{border:1.5px solid var(--gm);color:var(--gm);background:#fff}
+.plan-cta.secondary:hover{background:var(--gm);color:#fff}
+.reserve-note{background:rgba(90,158,26,.05);border:1px dashed rgba(90,158,26,.2);border-radius:var(--radius);padding:1.3rem 1.5rem;display:flex;align-items:flex-start;gap:1rem}
+.rn-icon{font-size:1.4rem;flex-shrink:0;margin-top:.1rem}
+.rn-text h4{font-size:.9rem;font-weight:500;color:var(--gd);margin-bottom:.3rem}
+.rn-text p{font-size:.82rem;color:var(--muted);line-height:1.7}
+
+/* PRODUCE */
+.produce-cards{display:flex;flex-direction:column;gap:1.5rem}
+.prod-card{display:grid;grid-template-columns:380px 1fr;background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid var(--faint);transition:transform .25s,box-shadow .25s}
+.prod-card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(27,58,8,.09)}
+.prod-card.flip{grid-template-columns:1fr 380px}
+.prod-img{height:260px;overflow:hidden;position:relative}
+.prod-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.prod-card:hover .prod-img img{transform:scale(1.04)}
+.prod-lbl{position:absolute;top:.9rem;left:.9rem;background:rgba(27,58,8,.65);backdrop-filter:blur(6px);color:#fff;font-size:.65rem;font-weight:600;padding:.2rem .65rem;border-radius:2rem;letter-spacing:.07em;text-transform:uppercase}
+.prod-body{padding:2rem 2.2rem;display:flex;flex-direction:column;justify-content:center}
+.prod-name{font-family:'Playfair Display',serif;font-size:1.45rem;color:var(--gd);margin-bottom:.2rem;font-weight:700}
+.prod-local{font-size:.75rem;color:var(--muted);font-style:italic;margin-bottom:.9rem}
+.prod-desc{font-size:.88rem;color:var(--mid);line-height:1.85;font-weight:300;margin-bottom:1rem}
+.prod-timing{font-size:.75rem;color:var(--sf);font-weight:500;margin-bottom:.9rem;display:flex;align-items:center;gap:.3rem}
+.prod-tags{display:flex;flex-wrap:wrap;gap:.3rem}
+.tag{font-size:.65rem;padding:.18rem .55rem;border-radius:2rem;font-weight:500;letter-spacing:.04em}
+.tg{background:rgba(46,96,16,.08);color:var(--gm)}
+.te{background:rgba(122,79,44,.08);color:#6b4020}
+.ta{background:rgba(200,101,10,.08);color:var(--sf)}
+.tr{background:rgba(150,32,32,.08);color:var(--red)}
+
+/* VARIETIES */
+.var-tabs{display:flex;gap:.5rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.vtab{padding:.5rem 1.3rem;border-radius:2rem;font-size:.82rem;font-weight:500;border:1px solid var(--faint);color:var(--muted);background:var(--white);cursor:pointer;transition:all .2s}
+.vtab:hover{border-color:var(--gm);color:var(--gm)}
+.vtab.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.vpanel{display:none}
+.vpanel.on{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
+.vimg{border-radius:var(--radius);overflow:hidden;height:360px}
+.vimg img{width:100%;height:100%;object-fit:cover;display:block}
+.vinfo{padding:.5rem 0}
+.vseason{display:flex;gap:.35rem;margin-bottom:1.3rem}
+.vsm{font-size:.65rem;font-weight:600;padding:.22rem .6rem;border-radius:2rem;letter-spacing:.05em;text-transform:uppercase}
+.vsm.on{background:var(--gd);color:#fff}
+.vsm.off{background:var(--faint);color:var(--muted)}
+.vname{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gd);margin-bottom:.15rem;font-weight:700}
+.valias{font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:1rem}
+.vdesc{font-size:.88rem;color:var(--mid);line-height:1.85;font-weight:300;margin-bottom:1.2rem}
+.vbox{border-radius:0 8px 8px 0;padding:.6rem 1rem;margin-bottom:.75rem}
+.vbox.best{border-left:2px solid var(--gl);background:rgba(90,158,26,.05)}
+.vbox.not{border-left:2px solid var(--red);background:rgba(150,32,32,.05)}
+.vbox-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.09em;font-weight:600;margin-bottom:.2rem}
+.vbox.best .vbox-lbl{color:var(--gm)}
+.vbox.not .vbox-lbl{color:var(--red)}
+.vbox-txt{font-size:.85rem;color:var(--mid);font-weight:300;line-height:1.65}
+.vuse-chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.vchip{display:flex;align-items:center;gap:.35rem;font-size:.75rem;padding:.3rem .75rem;border-radius:2rem;border:1px solid var(--faint);color:var(--mid);background:var(--white);font-weight:400}
+.vchip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-raw{background:var(--gl)}.dot-pickle{background:var(--sf)}.dot-juice{background:#2090c0}
+
+/* STEPS */
+.steps-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative}
+.steps-row::after{content:'';position:absolute;top:22px;left:calc(12.5% + 8px);right:calc(12.5% + 8px);height:1px;background:repeating-linear-gradient(90deg,var(--gl) 0,var(--gl) 5px,transparent 5px,transparent 12px);z-index:0}
+.step{background:var(--white);border:1px solid var(--faint);border-radius:var(--radius);padding:1.6rem 1.3rem;position:relative;z-index:1;transition:transform .2s,box-shadow .2s}
+.step:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(27,58,8,.09)}
+.step-n{width:40px;height:40px;border-radius:50%;background:var(--gd);color:#fff;font-family:'Playfair Display',serif;font-size:1.05rem;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-weight:700}
+.step h3{font-size:.95rem;color:var(--gd);font-weight:600;margin-bottom:.4rem}
+.step p{font-size:.82rem;color:var(--muted);line-height:1.65}
+
+/* DELIVERY */
+.delivery-section{background:var(--white);padding:4rem 3rem;border-top:1px solid var(--faint);border-bottom:1px solid var(--faint)}
+.delivery-inner{max-width:780px;margin:0 auto}
+.del-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.del-box{padding:1.5rem;border-radius:var(--radius);border:1px solid var(--faint);background:var(--cream)}
+.del-box-icon{font-size:1.5rem;margin-bottom:.7rem}
+.del-box h4{font-size:.92rem;font-weight:600;color:var(--gd);margin-bottom:.4rem}
+.del-box p{font-size:.82rem;color:var(--muted);line-height:1.7}
+
+/* PLEDGE */
+.pledge{background:var(--gd);padding:5rem 3rem;text-align:center;position:relative;overflow:hidden}
+.pledge::before,.pledge::after{content:'🥭';font-size:18rem;opacity:.04;position:absolute;pointer-events:none;line-height:1}
+.pledge::before{top:-3rem;left:-3rem}
+.pledge::after{bottom:-3rem;right:-3rem;transform:rotate(180deg)}
+.pledge-inner{position:relative;z-index:1;max-width:640px;margin:0 auto}
+.pledge-script{font-size:.9rem;color:rgba(232,151,12,.5);margin-bottom:1rem;letter-spacing:.06em}
+.pledge blockquote{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,2.2vw,1.9rem);color:#fff;line-height:1.55;font-style:italic;margin-bottom:.9rem;font-weight:400}
+.pledge cite{font-size:.73rem;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;font-style:normal}
+
+/* WHY */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.why-card{background:var(--white);border:1px solid var(--faint);border-radius:var(--radius);padding:1.5rem;transition:transform .2s}
+.why-card:hover{transform:translateY(-3px)}
+.why-icon{font-size:1.3rem;margin-bottom:.65rem}
+.why-card h4{font-size:.9rem;font-weight:600;color:var(--gd);margin-bottom:.4rem}
+.why-card p{font-size:.82rem;color:var(--muted);line-height:1.65}
+
+/* FOOTER */
+footer{background:#0e1e04;padding:3.5rem 3rem 2rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:2rem}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:#fff}
+.footer-logo span{color:var(--sf);font-style:italic}
+.footer-brand p{font-size:.78rem;color:rgba(255,255,255,.3);margin-top:.5rem;max-width:190px;line-height:1.65}
+
+/* FOOTER ANIMATED LOGO */
+.footer-logo-anim{
+display:inline-flex;
+align-items:center;
+gap:.22rem;
+line-height:1;
+margin-bottom:.6rem;
+}
+.footer-logo-fixed{
+font-family:'Cormorant Garamond','Playfair Display',serif;
+font-size:1.55rem;
+font-weight:700;
+color:#fff;
+letter-spacing:.02em;
+line-height:1;
+}
+/* Footer emoji — same hang animation, white-tinted */
+.footer-emoji-wrap{
+position:relative;
+display:inline-block;
+width:1.1rem;
+height:1.1rem;
+margin:0 .1rem;
+vertical-align:middle;
+}
+.footer-emoji{
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:.88rem;
+line-height:1;
+transform-origin:50% 10%;
+opacity:0;
+}
+.footer-emoji.fe-active{
+opacity:1;
+animation:emojiHang 4.5s ease-in-out infinite, emojiFadeIn .5s cubic-bezier(.22,1,.36,1) forwards;
+}
+.footer-emoji.fe-exit{
+animation:emojiFadeOut .4s cubic-bezier(.55,0,1,.45) forwards;
+}
+/* Footer flip words — amber on dark bg */
+.footer-flip-wrap{
+display:inline-block;
+position:relative;
+overflow:hidden;
+height:1.08rem;
+vertical-align:baseline;
+min-width:4.5rem;
+perspective:400px;
+}
+.footer-flip-word{
+position:absolute;
+left:0;bottom:0;
+font-family:'Noto Sans Telugu','Noto Sans Kannada','Noto Sans Tamil','Noto Sans Devanagari','Noto Sans','Inter',sans-serif;
+font-size:.68rem;
+font-weight:600;
+color:var(--sfl);
+letter-spacing:.05em;
+white-space:nowrap;
+line-height:1.08rem;
+transform-origin:50% 100%;
+transform:rotateX(90deg);
+opacity:0;
+pointer-events:none;
+backface-visibility:hidden;
+}
+.footer-flip-word.ffw-in{
+animation:flipIn .55s cubic-bezier(.22,1,.36,1) forwards;
+}
+.footer-flip-word.ffw-out{
+animation:flipOut .38s cubic-bezier(.55,0,1,.45) forwards;
+}
+.flinks{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.flinks a{font-size:.78rem;color:rgba(255,255,255,.4);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--sfl)}.flinks-head{color:rgba(255,255,255,.65);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:.15rem}.flinks a.contact-link{display:inline-flex;align-items:center;gap:.4rem}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.05);padding-top:1.3rem;margin-top:1rem;width:100%;font-size:.7rem;color:rgba(255,255,255,.18);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+
+.fade{opacity:0;transform:translateY(22px);transition:opacity .75s ease,transform .75s ease}
+.fade.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+nav{padding:.75rem 1.5rem}.nav-links{display:none}
+.hero{grid-template-columns:1fr;padding:4rem 1.5rem 3rem;min-height:auto;gap:2rem}
+.mosaic{height:260px}
+.section{padding:3.5rem 1.5rem}
+.plans-grid{grid-template-columns:1fr}
+.prod-card,.prod-card.flip{grid-template-columns:1fr}.prod-img{height:220px}
+.vpanel.on{grid-template-columns:1fr}.vimg{height:220px}
+.steps-row{grid-template-columns:1fr 1fr}.steps-row::after{display:none}
+.del-grid{grid-template-columns:1fr}
+.pledge{padding:3.5rem 1.5rem}
+footer{padding:2.5rem 1.5rem}
+}
+
+/* ── INTRO PRICE POPUP ──────────────────────────────────────── */
+.intro-popup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+z-index:600;
+background:var(--gd);
+border-radius:16px;
+padding:1.4rem 1.6rem 1.2rem;
+width:260px;
+box-shadow:
+0 20px 60px rgba(0,0,0,.35),
+0 0 0 1px rgba(90,158,26,.3),
+inset 0 1px 0 rgba(255,255,255,.06);
+animation:none;
+opacity:0;
+pointer-events:none;
+overflow:hidden;
+}
+@keyframes popupSlideIn{
+from{opacity:0;transform:translate(-50%,-44%) scale(.92)}
+to  {opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+/* ambient glow behind card */
+.intro-popup::before{
+content:'';
+position:absolute;
+inset:-40px;
+background:radial-gradient(ellipse at 50% 100%, rgba(232,151,12,.18) 0%, transparent 70%);
+pointer-events:none;
+}
+.intro-popup-backdrop{
+position:fixed;inset:0;
+background:rgba(0,0,0,.55);
+z-index:599;
+animation:fadeInBd .4s ease both;
+}
+@keyframes fadeInBd{from{opacity:0}to{opacity:1}}
+.intro-popup-backdrop.hidden{
+animation:fadeOutBd .35s ease forwards;
+}
+@keyframes fadeOutBd{to{opacity:0}}
+.intro-popup-close{
+position:absolute;
+top:.6rem;right:.7rem;
+background:none;border:none;
+color:rgba(255,255,255,.3);
+font-size:.9rem;cursor:pointer;
+line-height:1;padding:.2rem .3rem;
+transition:color .2s;
+}
+.intro-popup-close:hover{color:rgba(255,255,255,.7)}
+.intro-popup-eyebrow{
+font-size:.58rem;
+font-weight:600;
+letter-spacing:.15em;
+text-transform:uppercase;
+color:rgba(232,151,12,.7);
+margin-bottom:.6rem;
+display:flex;align-items:center;gap:.4rem;
+}
+.intro-popup-eyebrow::before{
+content:'';
+display:inline-block;
+width:16px;height:1px;
+background:rgba(232,151,12,.5);
+}
+.intro-popup-price-row{
+display:flex;
+align-items:baseline;
+gap:.5rem;
+margin-bottom:.25rem;
+}
+.intro-popup-price{
+font-family:'Playfair Display',serif;
+font-size:2.2rem;
+font-weight:700;
+color:#fff;
+line-height:1;
+animation:amberGlowPop 2.5s ease-in-out infinite;
+}
+@keyframes amberGlowPop{
+0%,100%{text-shadow:0 0 14px rgba(255,180,30,.9),0 0 30px rgba(232,140,0,.7),0 0 55px rgba(200,100,0,.4)}
+50%    {text-shadow:0 0 4px rgba(255,180,30,.3),0 0 10px rgba(232,140,0,.2)}
+}
+.intro-popup-was{
+font-size:.9rem;
+color:rgba(255,255,255,.28);
+position:relative;
+display:inline-block;
+}
+.intro-popup-was::after{
+content:'';
+position:absolute;
+top:48%;right:0;
+width:100%;height:1.5px;
+background:#e03535;
+box-shadow:0 0 5px rgba(224,53,53,.8);
+transform-origin:right center;
+animation:strikeLoop 2s cubic-bezier(.4,0,.2,1) infinite;
+}
+.intro-popup-per{
+font-size:.68rem;
+color:rgba(255,255,255,.4);
+margin-bottom:.9rem;
+line-height:1;
+}
+.intro-popup-divider{
+height:1px;
+background:rgba(255,255,255,.07);
+margin-bottom:.85rem;
+}
+.intro-popup-reserve{
+font-size:.78rem;
+color:rgba(255,255,255,.55);
+line-height:1.6;
+margin-bottom:.85rem;
+}
+.intro-popup-reserve strong{
+color:#fff;
+font-weight:600;
+}
+.intro-popup-cta{
+display:block;
+text-align:center;
+background:var(--sf);
+color:#fff;
+font-size:.76rem;
+font-weight:600;
+letter-spacing:.04em;
+padding:.55rem;
+border-radius:2rem;
+text-decoration:none;
+transition:background .2s, transform .15s, box-shadow .15s;
+box-shadow:0 4px 16px rgba(200,101,10,.4);
+}
+.intro-popup-cta:hover{
+background:#a85208;
+transform:translateY(-1px);
+box-shadow:0 6px 20px rgba(200,101,10,.55);
+}
+.intro-popup-tag{
+text-align:center;
+font-size:.58rem;
+color:rgba(255,255,255,.22);
+letter-spacing:.06em;
+text-transform:uppercase;
+margin-top:.55rem;
+}
+/* hide when dismissed */
+.intro-popup.hidden{
+animation:popupSlideOut .4s cubic-bezier(.55,0,1,.45) forwards;
+}
+@keyframes popupSlideOut{
+0%  { opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
+100%{ opacity:0; transform:translate(-50%,-50%) scale(.96); filter:blur(2px); }
+}
+@keyframes fadeOutBd{
+0%  { opacity:1; }
+100%{ opacity:0; }
+}
+
+/* ── BOTTOM NAV BAR ─────────────────────────────────────────── */
+.bottom-nav{
+position:fixed;
+bottom:0;left:0;right:0;
+z-index:2000;
+background:var(--gd);
+border-top:1px solid rgba(255,255,255,.08);
+display:flex;
+align-items:stretch;
+justify-content:space-around;
+padding:0;
+height:60px;
+box-shadow:0 -4px 24px rgba(0,0,0,.25);
+}
+.bn-item{
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:.28rem;
+flex:1;
+text-decoration:none;
+color:rgba(255,255,255,.45);
+font-size:.58rem;
+font-weight:600;
+letter-spacing:.08em;
+text-transform:uppercase;
+transition:color .2s, background .2s;
+position:relative;
+cursor:pointer;
+border:none;
+background:transparent;
+padding:0;
+}
+.bn-item:hover,.bn-item.active{
+color:var(--sfl);
+}
+/* active indicator line at top */
+.bn-item.active::before{
+content:'';
+position:absolute;
+top:0;left:20%;right:20%;
+height:2px;
+background:var(--sfl);
+border-radius:0 0 2px 2px;
+}
+.bn-icon{
+font-size:1.2rem;
+line-height:1;
+transition:transform .2s;
+}
+.bn-item:hover .bn-icon,.bn-item.active .bn-icon{
+transform:translateY(-1px);
+}
+/* body padding so content doesn't hide behind bottom nav */
+body{ padding-bottom:60px; }
+
+/* ═══ PRODUCTS PAGE OVERLAY ═══════════════════════════════════ */
+.products-overlay{
+position:fixed;inset:0;z-index:1500;
+background:var(--cream);
+display:flex;flex-direction:column;
+transform:translateX(100%);
+transition:transform .45s cubic-bezier(.22,1,.36,1);
+overflow:hidden;
+will-change:transform;
+}
+.products-overlay.open{
+transform:translateX(0);
+}
+.prod-page-back{
+pointer-events:auto !important;
+cursor:pointer !important;
+z-index:999;
+position:relative;
+}
+
+/* BUTTERFLY ANIMATION */
+#butterfly{
+position:fixed;z-index:2000;
+pointer-events:none;will-change:transform,opacity;
+opacity:0;top:0;left:0;
+font-size:2.8rem;line-height:1;
+}
+#butterfly .btf-box{ display:block; transition:opacity .15s; }
+#butterfly .btf-lid{
+display:block;
+transform-origin:50% 0%;
+transition:transform .1s cubic-bezier(.2,0,.4,1), opacity .08s .06s;
+}
+#butterfly.box-open .btf-lid{
+transform:rotateX(-160deg) scaleY(0.3);
+opacity:0;
+}
+.btf-mango-burst{
+position:fixed;z-index:2001;pointer-events:none;
+line-height:1;
+will-change:transform,opacity;
+}
+@keyframes mangoFloat{
+0%   { opacity:0;  transform:translate3d(0,0,0) scale(0); }
+6%   { opacity:1;  transform:translate3d(calc(var(--mx)*.04),calc(var(--my)*.04 - 18px),0) scale(1.5); }
+55%  { opacity:1; }
+100% { opacity:0;  transform:translate3d(var(--mx),calc(var(--my) + var(--drop)),0) scale(.15); }
+}
+@keyframes ripple{
+0%  { transform:scale(0);   opacity:.8; }
+100%{ transform:scale(3.5); opacity:0;  }
+}
+.btf-ripple{
+position:fixed;z-index:2000;pointer-events:none;
+border-radius:50%;
+will-change:transform,opacity;
+}
+
+/* scrim */
+#btf-scrim{
+position:fixed;inset:0;z-index:1998;
+background:rgba(0,0,0,0);
+pointer-events:none;
+transition:background .5s ease;
+}
+#btf-scrim.dim{background:rgba(0,0,0,.45)}
+.b-sparkle{
+position:fixed;border-radius:50%;pointer-events:none;
+animation:spkl .75s ease-out forwards;
+}
+@keyframes spkl{
+0%{opacity:.9;transform:translate(0,0) scale(1)}
+100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}
+}
+
+/* PRODUCTS PAGE HEADER */
+/* PRODUCTS PAGE BRAND HERO */
+.prod-hero{
+background:var(--gd);
+padding:1.4rem 1.5rem 1.2rem;
+flex-shrink:0;
+border-bottom:1px solid rgba(255,255,255,.07);
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:1rem;
+}
+.prod-hero-logo{
+display:inline-flex;
+align-items:baseline;
+gap:.22rem;
+line-height:1;
+text-decoration:none;
+}
+.prod-hero-wordmark{
+font-family:'Cormorant Garamond',serif;
+font-size:1.85rem;
+font-weight:700;
+color:#fff;
+letter-spacing:.02em;
+line-height:1;
+}
+/* reuse same emoji-wrap & flip-wrap but with white flip word */
+.prod-hero .logo-emoji-wrap{
+width:1.25rem;height:1.25rem;
+margin:0 .12rem;
+}
+.prod-hero .logo-emoji{ font-size:1rem; }
+.prod-hero .logo-flip-wrap{ min-width:4.8rem; }
+.prod-hero .logo-flip-word{ color:var(--sfl); }
+.prod-hero-tagline{
+font-size:.56rem;
+font-weight:500;
+letter-spacing:.14em;
+text-transform:uppercase;
+color:rgba(255,255,255,.32);
+margin-top:.28rem;
+}
+.prod-hero-right{
+display:flex;flex-direction:column;align-items:flex-end;gap:.3rem;
+}
+.prod-hero-cart{
+background:rgba(255,255,255,.1);
+border:1px solid rgba(255,255,255,.18);
+color:#fff;
+font-size:.7rem;font-weight:600;
+letter-spacing:.04em;
+padding:.32rem .85rem;
+border-radius:2rem;
+cursor:pointer;
+display:flex;align-items:center;gap:.4rem;
+transition:background .2s;
+}
+.prod-hero-cart:hover{ background:rgba(255,255,255,.18); }
+
+.prod-page-header{
+background:var(--gd);
+padding:.9rem 1.5rem;
+display:flex;align-items:center;gap:1rem;
+position:sticky;top:0;z-index:100;
+flex-shrink:0;
+}
+.prod-page-back{
+background:none;border:none;
+color:rgba(255,255,255,.75);
+font-size:1.2rem;cursor:pointer;
+padding:.6rem;transition:color .2s,transform .2s;
+display:flex;align-items:center;
+pointer-events:auto;
+position:relative;
+z-index:200;
+min-width:44px;min-height:44px;
+}
+.prod-page-back:hover{color:#fff;transform:translateX(-3px)}
+.prod-page-title{
+font-family:'Playfair Display',serif;
+font-size:1.2rem;color:#fff;font-weight:700;flex:1;
+}
+.prod-page-cart-btn{
+background:none;border:1px solid rgba(255,255,255,.2);
+color:#fff;font-size:.72rem;font-weight:600;
+letter-spacing:.05em;text-transform:uppercase;
+padding:.32rem .85rem;border-radius:2rem;cursor:pointer;
+display:flex;align-items:center;gap:.4rem;transition:background .2s;
+}
+.prod-page-cart-btn:hover{background:rgba(255,255,255,.1)}
+.cart-count{
+background:var(--sf);color:#fff;
+font-size:.6rem;font-weight:700;
+width:16px;height:16px;border-radius:50%;
+display:flex;align-items:center;justify-content:center;
+}
+
+/* PRODUCTS CONTENT */
+.prod-page-body{
+flex:1;overflow-y:auto;padding:1.5rem;
+padding-bottom:80px;
+}
+
+/* CATEGORY */
+/* VARIETY SECTION LABEL */
+.var-section-label{
+font-size:.65rem;font-weight:600;letter-spacing:.12em;
+text-transform:uppercase;color:var(--muted);
+margin:0 0 .8rem;display:flex;align-items:center;gap:.5rem;
+}
+.var-section-label::after{
+content:'';flex:1;height:1px;background:var(--faint);
+}
+
+/* VARIETY CARDS — horizontal scroll snap */
+.var-cards{
+display:flex;gap:.75rem;
+overflow-x:auto;
+scroll-snap-type:x mandatory;
+-webkit-overflow-scrolling:touch;
+padding-bottom:.5rem;
+margin-bottom:1.1rem;
+scrollbar-width:none;
+}
+.var-cards::-webkit-scrollbar{display:none}
+
+.var-card{
+flex:0 0 calc(100% - 2.5rem); /* show peek of next card */
+scroll-snap-align:start;
+border-radius:18px;
+overflow:hidden;
+cursor:pointer;
+position:relative;
+height:160px;
+border:2px solid transparent;
+transition:border-color .25s, box-shadow .25s;
+will-change:transform;
+}
+.var-card.selected{
+border-color:var(--gl);
+box-shadow:0 0 0 1px var(--gl), 0 8px 28px rgba(46,96,16,.22);
+}
+
+/* Full-bleed photo fills entire card */
+.var-card-img{
+position:absolute;inset:0;
+width:100%;height:100%;
+}
+.var-card-img img,
+.rasam-slide,.bang-slide{
+position:absolute;inset:0;
+width:100%;height:100%;
+object-fit:cover;
+opacity:0;
+transition:opacity 1.2s ease;
+will-change:opacity;
+}
+.rasam-slide.active,.bang-slide.active{opacity:1}
+
+/* Gradient overlay — bottom to top */
+.var-card::after{
+content:'';
+position:absolute;inset:0;
+background:linear-gradient(
+to top,
+rgba(10,28,6,.88) 0%,
+rgba(10,28,6,.35) 45%,
+transparent 100%
+);
+pointer-events:none;
+}
+
+/* Text sits above gradient */
+.var-card-body{
+position:absolute;
+bottom:0;left:0;right:0;
+padding:.85rem 1rem;
+z-index:2;
+}
+.var-card-name{
+font-family:'Playfair Display',serif;
+font-size:1.15rem;color:#fff;font-weight:700;
+margin-bottom:.2rem;line-height:1;
+}
+.var-card-sub{
+font-size:.7rem;color:rgba(255,255,255,.65);
+line-height:1.4;margin-bottom:.35rem;
+}
+.var-card-badge{
+display:inline-flex;align-items:center;gap:.3rem;
+font-size:.6rem;font-weight:600;letter-spacing:.07em;
+text-transform:uppercase;
+background:rgba(90,158,26,.25);
+border:1px solid rgba(90,158,26,.5);
+color:rgba(255,255,255,.9);
+padding:.18rem .55rem;border-radius:2rem;
+}
+
+/* Selected tick badge top-right */
+.var-card-check{
+position:absolute;top:.75rem;right:.75rem;
+width:26px;height:26px;border-radius:50%;
+background:rgba(255,255,255,.15);
+border:1.5px solid rgba(255,255,255,.35);
+display:flex;align-items:center;justify-content:center;
+z-index:3;
+transition:all .25s cubic-bezier(.34,1.56,.64,1);
+}
+.var-card.selected .var-card-check{
+background:var(--gl);
+border-color:var(--gl);
+transform:scale(1.1);
+}
+.var-card.selected .var-card-check::after{
+content:'✓';
+color:#fff;font-size:.7rem;font-weight:700;
+}
+
+/* Scroll dots indicator */
+.var-scroll-hint{
+display:flex;justify-content:center;gap:.35rem;
+margin-bottom:1rem;
+}
+.vsh-dot{
+width:5px;height:5px;border-radius:50%;
+background:var(--faint);transition:background .25s,width .25s;
+}
+.vsh-dot.on{background:var(--gm);width:14px;border-radius:3px;}
+
+/* TREE COUNT PILLS */
+.tree-count-row{display:flex;gap:.65rem;margin-bottom:1rem}
+.tree-count-btn{
+flex:1;padding:.75rem .6rem;border-radius:14px;
+border:1.5px solid var(--faint);background:var(--white);
+cursor:pointer;text-align:center;transition:all .22s;
+position:relative;overflow:hidden;
+}
+.tree-count-btn:hover,.tree-count-btn.sel{
+border-color:var(--gm);
+background:rgba(46,96,16,.04);
+}
+.tc-trees{
+font-family:'Playfair Display',serif;
+font-size:1rem;font-weight:700;color:var(--gd);
+display:block;line-height:1;margin-bottom:.28rem;
+}
+.tc-reserve{
+font-size:.7rem;font-weight:600;color:var(--sf);
+display:block;margin-bottom:.18rem;
+}
+.tc-reserve span{font-size:.62rem;color:var(--muted);font-weight:400}
+.tc-full{
+font-size:.65rem;color:var(--muted);
+display:block;
+}
+.tc-full span{text-decoration:line-through;color:rgba(0,0,0,.25)}
+/* selected tick */
+.tree-count-btn.sel::before{
+content:'✓';
+position:absolute;top:.4rem;right:.55rem;
+font-size:.65rem;font-weight:700;
+color:var(--gm);
+}
+/* payment toggle */
+.qty-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.qty-btn{flex:1;min-width:60px;padding:.55rem .4rem;border:1.5px solid var(--faint);border-radius:10px;background:var(--white);font-size:.78rem;font-weight:600;color:var(--mid);cursor:pointer;text-align:center;transition:border-color .15s,color .15s,background .15s}
+.qty-btn:hover{border-color:var(--gm);color:var(--gm)}
+.qty-btn.sel{border-color:var(--gm);background:rgba(46,96,16,.07);color:var(--gm)}
+.qty-price-display{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--gd);margin-bottom:.8rem;min-height:2rem;transition:opacity .15s;display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap}
+.qty-price-display span{transition:all .2s}
+.qty-price-orig{font-family:'Inter',sans-serif;font-size:.9rem;font-weight:400;color:var(--muted);text-decoration:line-through;display:none}
+.qty-price-save{font-family:'Inter',sans-serif;font-size:.7rem;font-weight:600;color:var(--gm);background:rgba(46,96,16,.09);padding:2px 8px;border-radius:999px;display:none;align-self:center}
+.pay-toggle{
+display:flex;border:1.5px solid var(--faint);
+border-radius:12px;overflow:hidden;
+margin-bottom:.85rem;
+}
+.pay-opt{
+flex:1;padding:.55rem .5rem;
+font-size:.76rem;font-weight:500;
+color:var(--mid);text-align:center;
+cursor:pointer;transition:all .2s;
+border:none;background:transparent;
+}
+.pay-opt.active{
+background:var(--gd);color:#fff;font-weight:600;
+}
+.strip-badge.corent-badge{
+background:rgba(46,96,16,.6);
+color:#d4f0b8;
+border:1px solid rgba(90,158,26,.45);
+padding:.25rem .9rem;
+display:flex;align-items:baseline;gap:.1rem;
+}
+/* ── CO-RENT ─────────────────────────────────────────────────── */
+.corent-toggle-row{
+display:flex;align-items:center;justify-content:space-between;
+padding:.65rem .8rem;
+border:1.5px solid var(--faint);border-radius:12px;
+background:var(--white);
+margin-bottom:.75rem;
+cursor:pointer;
+transition:border-color .2s,background .2s;
+}
+.corent-toggle-row.active{border-color:var(--gm);background:rgba(46,96,16,.04);}
+.corent-toggle-label{font-size:.82rem;font-weight:600;color:var(--mid);display:flex;flex-direction:column;gap:.1rem;}
+.corent-toggle-label span{font-size:.68rem;font-weight:400;color:var(--muted);}
+.corent-toggle-pill{width:40px;height:22px;border-radius:999px;background:var(--faint);position:relative;transition:background .22s;flex-shrink:0;}
+.corent-toggle-pill::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .22s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.corent-toggle-row.active .corent-toggle-pill{background:var(--gm);}
+.corent-toggle-row.active .corent-toggle-pill::after{transform:translateX(18px);}
+.corent-panel{display:none;background:rgba(46,96,16,.03);border:1.5px solid rgba(46,96,16,.15);border-radius:14px;padding:1rem;margin-bottom:.85rem;}
+.corent-panel.open{display:block;}
+.corent-slots-label{font-size:.7rem;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:.65rem;}
+.corent-slots-row{display:flex;gap:.5rem;margin-bottom:1rem;}
+.corent-slot-btn{flex:1;padding:.6rem .3rem;border-radius:11px;border:1.5px solid var(--faint);background:var(--white);cursor:pointer;text-align:center;transition:all .2s;position:relative;}
+.corent-slot-btn:hover{border-color:var(--gm);}
+.corent-slot-btn.sel{border-color:var(--gm);background:rgba(46,96,16,.07);}
+.corent-slot-btn.sel::before{content:'✓';position:absolute;top:.25rem;right:.4rem;font-size:.6rem;font-weight:700;color:var(--gm);}
+.csb-people{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--gd);display:block;line-height:1;margin-bottom:.2rem;}
+.csb-price{font-size:.68rem;font-weight:600;color:var(--sf);display:block;}
+.csb-each{font-size:.6rem;color:var(--muted);display:block;margin-top:.05rem;}
+.corent-map{border-radius:12px;overflow:hidden;border:1.5px solid rgba(46,96,16,.15);margin-top:.25rem;background:var(--white);}
+.corent-map-title{font-size:.7rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;padding:.55rem .75rem .3rem;}
+.corent-tree-vis{padding:.5rem .75rem .75rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+.corent-tree-icon{font-size:2.8rem;line-height:1;filter:drop-shadow(0 2px 6px rgba(46,96,16,.25));}
+.corent-slots-vis{display:flex;gap:.45rem;width:100%;justify-content:center;}
+.corent-slot-vis{flex:1;max-width:70px;border-radius:10px;border:1.5px solid var(--faint);padding:.45rem .3rem;text-align:center;transition:all .3s;background:var(--white);}
+.corent-slot-vis.taken{border-color:var(--gm);background:rgba(46,96,16,.08);}
+.corent-slot-vis.you{border-color:var(--sf);background:rgba(200,101,10,.08);}
+.csv-avatar{font-size:1.2rem;display:block;margin-bottom:.15rem;}
+.csv-label{font-size:.58rem;font-weight:600;color:var(--muted);display:block;}
+.corent-slot-vis.taken .csv-label{color:var(--gm);}
+.corent-slot-vis.you .csv-label{color:var(--sf);}
+.corent-status{font-size:.72rem;color:var(--mid);text-align:center;padding:.4rem .75rem .6rem;border-top:1px solid var(--faint);}
+.corent-status strong{color:var(--gm);}
+.prod-category{
+margin-bottom:2rem;
+}
+.prod-cat-header{
+display:flex;align-items:center;gap:.7rem;
+margin-bottom:1rem;
+cursor:pointer;
+}
+.prod-cat-icon{font-size:1.5rem}
+.prod-cat-name{
+font-family:'Playfair Display',serif;
+font-size:1.2rem;color:var(--gd);font-weight:700;
+}
+.prod-cat-arrow{
+margin-left:auto;color:var(--muted);font-size:.85rem;
+transition:transform .25s;
+}
+.prod-cat-arrow.open{transform:rotate(90deg)}
+.prod-cat-body{
+display:flex;flex-direction:column;gap:.85rem;
+overflow:hidden;
+max-height:0;
+transition:max-height .4s cubic-bezier(.22,1,.36,1);
+}
+.prod-cat-body.open{ max-height:2400px; }
+
+/* PRODUCT CARD */
+.prod-item{
+background:var(--white);
+border:1px solid var(--faint);
+border-radius:14px;
+padding:1rem 1.1rem;
+display:flex;align-items:center;gap:1rem;
+transition:box-shadow .2s,transform .2s;
+}
+.prod-item:hover{
+box-shadow:0 6px 24px rgba(27,58,8,.1);
+transform:translateY(-1px);
+}
+.prod-item-emoji{font-size:2.2rem;flex-shrink:0}
+.prod-item-info{flex:1}
+.prod-item-name{
+font-family:'Playfair Display',serif;
+font-size:1rem;color:var(--gd);font-weight:600;margin-bottom:.18rem;
+}
+.prod-item-desc{
+font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:.45rem;
+}
+.prod-item-price{
+font-size:.88rem;font-weight:700;color:var(--gd);
+}
+.prod-item-was{
+font-size:.72rem;color:var(--muted);
+text-decoration:line-through;margin-left:.3rem;
+}
+.prod-add-btn{
+background:var(--gd);color:#fff;
+border:none;cursor:pointer;
+font-size:.72rem;font-weight:600;
+letter-spacing:.04em;
+padding:.45rem 1rem;border-radius:2rem;
+white-space:nowrap;flex-shrink:0;
+transition:background .2s,transform .15s;
+position:relative;overflow:hidden;
+}
+.prod-add-btn:hover{background:var(--gm);transform:scale(1.04)}
+.prod-add-btn.added{background:var(--gl)}
+.add-area{position:relative;width:100%;height:50px;margin-top:.75rem}
+.add-area .prod-add-btn{position:absolute;inset:0;width:100%;height:100%;border-radius:14px;font-size:.86rem;letter-spacing:0;padding:.78rem;transition:opacity .18s,background .2s}
+.add-area .prod-add-btn.gone{opacity:0;pointer-events:none}
+.cart-stepper{position:absolute;inset:0;display:flex;align-items:center;border:1.5px solid var(--gm);border-radius:14px;overflow:hidden;background:var(--white);opacity:0;pointer-events:none;transition:opacity .18s}
+.cart-stepper.show{opacity:1;pointer-events:all}
+.cs-btn{width:48px;height:100%;background:none;border:none;font-size:1.35rem;color:var(--gm);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s}
+.cs-btn:hover{background:rgba(46,96,16,.07)}
+.cs-mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:0.5px solid var(--faint);border-right:0.5px solid var(--faint);height:100%;gap:1px;padding:0 4px}
+.cs-count{font-size:.95rem;font-weight:700;color:var(--gd);line-height:1}
+.cs-label{font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center}
+
+/* QTY SELECTOR — tree rental */
+.qty-row{display:flex;gap:.5rem;margin-top:.6rem}
+.qty-btn{
+flex:1;padding:.42rem;
+border:1.5px solid var(--faint);
+border-radius:10px;
+background:var(--cream);
+font-size:.78rem;font-weight:500;color:var(--mid);
+cursor:pointer;text-align:center;
+transition:all .2s;
+}
+.qty-btn:hover,.qty-btn.sel{
+border-color:var(--gm);
+background:rgba(46,96,16,.08);
+color:var(--gd);font-weight:600;
+}
+
+/* CART DRAWER */
+.cart-drawer{
+position:fixed;inset:0;z-index:2000;
+pointer-events:none;
+}
+.cart-backdrop{
+position:absolute;inset:0;
+background:rgba(0,0,0,.45);
+opacity:0;transition:opacity .35s;
+}
+.cart-drawer.open .cart-backdrop{opacity:1;pointer-events:auto}
+.cart-panel{
+position:absolute;bottom:0;left:0;right:0;
+background:var(--cream);
+border-radius:18px 18px 0 0;
+padding:1.5rem 1.5rem 0;
+transform:translateY(100%);
+transition:transform .45s cubic-bezier(.22,1,.36,1);
+max-height:80vh;overflow-y:auto;
+display:flex;flex-direction:column;
+}
+.cart-drawer.open .cart-panel{transform:translateY(0)}
+.cart-drawer.open{pointer-events:auto}
+.cart-panel-handle{
+width:40px;height:4px;border-radius:2px;
+background:var(--faint);margin:0 auto 1.2rem;
+}
+.cart-panel-title{
+font-family:'Playfair Display',serif;
+font-size:1.2rem;color:var(--gd);font-weight:700;margin-bottom:1rem;
+}
+.cart-empty{
+text-align:center;padding:2rem;
+color:var(--muted);font-size:.88rem;
+}
+.cart-line{
+display:flex;align-items:center;gap:.75rem;
+padding:.75rem 0;
+border-bottom:1px solid var(--faint);
+}
+.cart-line-emoji{font-size:1.6rem;flex-shrink:0}
+.cart-line-info{flex:1}
+.cart-line-name{font-size:.88rem;font-weight:500;color:var(--gd)}
+.cart-line-sub{font-size:.72rem;color:var(--muted)}
+.cart-line-price{font-size:.9rem;font-weight:700;color:var(--gd)}
+.cart-line-remove{
+background:none;border:none;cursor:pointer;
+color:var(--muted);font-size:.85rem;padding:.2rem .3rem;
+transition:color .2s;
+}
+.cart-line-remove:hover{color:var(--red)}
+.cart-total{
+display:flex;justify-content:space-between;align-items:baseline;
+padding:1rem 0 .5rem;
+font-weight:600;color:var(--gd);
+}
+.cart-checkout-btn{
+display:block;width:100%;
+background:var(--gd);color:#fff;
+text-align:center;padding:.9rem;
+border-radius:2rem;border:none;cursor:pointer;
+font-size:.9rem;font-weight:600;
+transition:background .2s,transform .15s;
+}
+.cart-checkout-btn:hover{background:var(--gm);transform:translateY(-1px)}
+#cartTotalRow{
+position:sticky;bottom:0;
+background:var(--cream);
+padding:0 0 calc(70px + .75rem);
+margin-top:auto;
+}
+
+/* AVAKAYA GALLERY SLIDESHOW */
+.prod-item--gallery{
+display:block;
+padding:0;
+overflow:hidden;
+border-radius:14px;
+border:1px solid var(--faint);
+background:var(--white);
+}
+.avk-gallery{
+position:relative;
+width:100%;
+height:220px;
+overflow:hidden;
+border-radius:14px;
+}
+.avk-slide{
+position:absolute;inset:0;
+width:100%;height:100%;
+object-fit:cover;
+opacity:0;
+transition:opacity 1.2s ease;
+will-change:opacity;
+}
+.avk-slide.active{opacity:1}
+.avk-dots{
+position:absolute;bottom:.65rem;left:50%;transform:translateX(-50%);
+display:flex;gap:.35rem;z-index:3;
+}
+.avk-dot{
+width:5px;height:5px;border-radius:50%;
+background:rgba(255,255,255,.4);
+transition:background .25s,width .25s;
+}
+.avk-dot.on{background:#fff;width:14px;border-radius:3px;}
+
+/* ===== Policy pages ===== */
+.policy-dialog{border:none;border-radius:18px;padding:0;width:min(680px,92vw);max-height:86vh;background:var(--cream);color:var(--mid);box-shadow:0 30px 80px rgba(0,0,0,.4);overflow:hidden}
+.policy-dialog::backdrop{background:rgba(14,30,4,.6)}
+.policy-dialog .policy-body{padding:2.2rem 2rem 2.6rem;max-height:86vh;overflow-y:auto}
+.policy-close{position:absolute;top:.6rem;right:1rem;background:none;border:none;font-size:1.9rem;line-height:1;color:var(--muted);cursor:pointer;z-index:2}
+.policy-close:hover{color:var(--sf)}
+.policy-body h2{font-family:'Playfair Display',serif;color:var(--gd);font-size:1.55rem;margin:0 0 .25rem;padding-right:1.6rem}
+.policy-body .policy-updated{font-size:.74rem;color:var(--muted);margin:0 0 1.3rem}
+.policy-body h3{font-family:'Playfair Display',serif;color:var(--gm);font-size:1.05rem;margin:1.4rem 0 .35rem}
+.policy-body p,.policy-body li{font-size:.9rem;line-height:1.7;color:var(--mid)}
+.policy-body ul{margin:.3rem 0 .3rem 1.1rem;padding:0}
+.policy-body li{margin-bottom:.3rem}
+.policy-body a{color:var(--sf);text-decoration:none}
+.policy-body a:hover{text-decoration:underline}
+.policy-yield{width:100%;border-collapse:collapse;margin:.7rem 0}
+.policy-yield th,.policy-yield td{border:1px solid var(--faint);padding:.5rem .7rem;text-align:left;font-size:.86rem}
+.policy-yield th{background:rgba(46,96,16,.08);color:var(--gd);font-weight:600}
+.footer-legal{width:100%;display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin-top:.7rem}
+.footer-legal a{font-size:.7rem;color:rgba(255,255,255,.35);text-decoration:none;cursor:pointer}
+.footer-legal a:hover{color:var(--sfl)}
+
+/* ===== Info pop-up animation & extras ===== */
+.policy-dialog[open]{animation:policyIn .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes policyIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.policy-dialog[open]::backdrop{animation:policyBd .3s ease}
+@keyframes policyBd{from{opacity:0}to{opacity:1}}
+.policy-offer{list-style:none;margin:.5rem 0;padding:0}
+.policy-offer li{padding:.6rem 0;border-bottom:1px solid var(--faint);font-size:.9rem;line-height:1.6;color:var(--mid)}
+.policy-offer li strong{color:var(--gd)}
+.policy-soon{display:inline-block;font-size:.66rem;background:rgba(200,101,10,.12);color:var(--sf);padding:.12rem .5rem;border-radius:6px;margin-left:.4rem;vertical-align:middle;font-weight:600}
+.policy-faq{margin:.4rem 0}
+.policy-faq details{border-bottom:1px solid var(--faint)}
+.policy-faq summary{cursor:pointer;list-style:none;padding:.75rem 1.6rem .75rem 0;font-weight:600;color:var(--gd);font-size:.92rem;position:relative}
+.policy-faq summary::-webkit-details-marker{display:none}
+.policy-faq summary::after{content:"+";position:absolute;right:.1rem;top:.62rem;font-size:1.25rem;line-height:1;color:var(--sf)}
+.policy-faq details[open] summary::after{content:"−"}
+.policy-faq details p{padding:0 0 .85rem;margin:0;font-size:.88rem;line-height:1.7;color:var(--mid);animation:policyFaq .25s ease}
+@keyframes policyFaq{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* ===== Mobile footer tidy-up ===== */
+@media(max-width:640px){
+  footer{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem 1.1rem;padding:2.6rem 1.4rem 1.4rem;align-items:start}
+  footer .footer-brand{grid-column:1 / -1;margin-bottom:.2rem}
+  footer .footer-brand p{max-width:none}
+  footer .flinks{gap:.7rem}
+  footer .flinks:nth-of-type(1){grid-column:1}
+  footer .flinks:nth-of-type(2){grid-column:2}
+  footer .flinks:nth-of-type(3){grid-column:1 / -1;margin-top:.3rem}
+  footer .flinks a{font-size:.85rem;color:rgba(255,255,255,.6)}
+  footer .flinks-head{font-size:.72rem;margin-bottom:.35rem}
+  footer .footer-bottom{grid-column:1 / -1;flex-direction:column;align-items:flex-start;gap:.8rem;font-size:.74rem}
+  footer .footer-legal{margin-top:0;gap:.4rem 1.1rem}
+  footer .footer-legal a{font-size:.74rem}
+}
+
+/* ===== Footer type refine + hero entrance ===== */
+footer .flinks a{font-size:.82rem;font-weight:400;letter-spacing:.005em;color:rgba(255,255,255,.55);line-height:1.5}
+footer .flinks a:hover{color:var(--sfl)}
+footer .flinks-head{color:rgba(255,255,255,.7)}
+footer .footer-brand p{color:rgba(255,255,255,.42)}
+@keyframes heroRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.hero-kicker,.hero h1,.hero-sub,.hero-delivery-note,.hero-ctas{animation:heroRise .7s cubic-bezier(.2,.8,.2,1) both}
+.hero h1{animation-delay:.08s}
+.hero-sub{animation-delay:.18s}
+.hero-delivery-note{animation-delay:.26s}
+.hero-ctas{animation-delay:.34s}
+.mosaic{animation:heroRise .9s cubic-bezier(.2,.8,.2,1) .12s both}
+@media(prefers-reduced-motion:reduce){.hero-kicker,.hero h1,.hero-sub,.hero-delivery-note,.hero-ctas,.mosaic{animation:none}}
+
+/* ===== Gifts tabbed slider (mirrors variety) ===== */
+.gtab{padding:.5rem 1.3rem;border-radius:2rem;font-size:.82rem;font-weight:500;border:1px solid var(--faint);color:var(--muted);background:var(--white);cursor:pointer;transition:all .2s}
+.gtab:hover{border-color:var(--gm);color:var(--gm)}
+.gtab.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.gpanel{display:none}
+.gpanel.on{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
+.gift-extra{display:inline-block;font-size:.6rem;font-weight:600;color:var(--sf);background:rgba(200,101,10,.12);padding:.12rem .55rem;border-radius:1rem;vertical-align:middle;margin-left:.45rem;letter-spacing:.02em;text-transform:uppercase}
+@media(max-width:760px){.gpanel.on{grid-template-columns:1fr;gap:1.4rem}}
+
+/* ===== Gifts: all three visible ===== */
+.gifts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2rem}
+.gift-item .gift-img{border-radius:var(--radius);overflow:hidden;height:200px;margin-bottom:1rem;background:rgba(46,96,16,.06)}
+.gift-item .gift-img img{width:100%;height:100%;object-fit:cover;display:block}
+.gift-name{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--gd);margin-bottom:.3rem}
+.gift-line{font-size:.85rem;color:var(--mid);line-height:1.6}
+.var-card.coming-soon{opacity:.5;pointer-events:none;filter:grayscale(.4)}
+@media(max-width:760px){.gifts-grid{grid-template-columns:1fr;gap:1.4rem}}
+</style>
+</head>
+<body><div class="strip">
+<div class="strip-brand prod-hero">
+<div><div class="prod-hero-logo"><span class="prod-hero-wordmark">Vruksha</span><span class="logo-emoji-wrap" id="stripEmojiWrap"><span class="logo-emoji e-active" data-idx="0">🥭</span><span class="logo-emoji" data-idx="1">🌾</span><span class="logo-emoji" data-idx="2">🌶️</span></span><span class="logo-flip-wrap prod-hero" id="stripFlipWrap"><span class="logo-flip-word flip-in">వృక్ష</span></span></div><div class="prod-hero-tagline">Mangoes · Pickles · Grains &amp; more</div></div><div class="prod-hero-right"><button class="prod-hero-cart" onclick="openCart()">🛒 Cart <span class="cart-count" id="cartCountStrip">0</span></button></div>
+</div>
+</div><section class="hero"><div class="hero-bg-circle"></div><div><div class="hero-kicker"><span class="kicker-dot"></span><span class="kicker-text">Vijayawada · Andhra Pradesh</span></div><h1>Your own<br>mango tree.<br><em>Yours alone.</em></h1><p class="hero-sub">Rent a living mango tree on a real Indian farm. Every fruit it grows — raw, pickled, or perfectly ripe — belongs only to you.</p><div class="hero-delivery-note">
+🗓 <strong>First delivery from April 2027</strong> &nbsp;·&nbsp;
+Raw: April &nbsp;·&nbsp; Pickles: April–May &nbsp;·&nbsp; Ripe: May–June
+</div><div class="hero-ctas"><a href="#" onclick="openProducts();return false;" class="btn-cta">Reserve your tree — ₹199</a><a href="#" onclick="openProducts();return false;" class="btn-link">Explore varieties ↓</a></div></div><div class="mosaic" onclick="openProducts()" style="cursor:pointer;"><div class="m ma"><img src="images/hero-1.jpg" alt="Ripe mangoes"/></div><div class="m mb"><img src="images/hero-2.jpg" alt="Raw green mangoes"/></div><div class="m mc"><img src="images/hero-3.jpg" alt="Mango pickle"/></div><div class="m md"><img src="images/hero-4.jpg" alt="Banganapalli mangoes"/></div></div>
+</section><div class="pilot-banner"><div class="pilot-inner"><div class="pilot-eyebrow">A note from the founder</div><p class="pilot-heading">"Honestly, this began as a dream I once thought was beyond me — to finally build a startup that is truly my own. My goal would be to create a place where a farmer is paid fairly, and where fruit reaches you honestly: nothing hidden, nothing rushed, nothing ripened with chemicals. I'm not here to chase quick profit. I'm here to build trust — one tree, one family, one honest season at a time. It's my first time doing anything like this, and it is equal parts terrifying and beautiful. Thank you for believing in something so small, so early. We'll grow it together."</p><p class="pilot-sub">Our first five members lock in a founding price as we grow together. Plans start from just <strong>₹999*</strong>, and you can co-rent a tree to share the season — and the cost — with others.<span style="display:block;margin-top:.5rem;font-size:.7rem;opacity:.6">*per person when you co-rent a tree</span></p><div class="pilot-slots"><div class="slot taken">01</div><div class="slot taken">02</div><div class="slot">03</div><div class="slot">04</div><div class="slot">05</div></div><div class="pilot-slots-label">2 spots taken · 3 remaining</div></div>
+</div><section class="section fade" id="plans"><p class="eyebrow">Choose your plan</p><h2 class="h2">Rent a mango tree</h2><p class="lead">One tree, one season, all yours. Every fruit it grows belongs only to you.</p><div class="plans-grid"><div class="plan-card fade"><div class="plan-head"><div class="plan-badge">Pilot price</div><div class="plan-name">One Mango Tree</div><div class="plan-sub">Perfect if you're trying this for the first time. Full harvest of one tree, your variety.</div><div class="plan-price"><span class="plan-amount">From ₹999</span></div><div class="plan-per">per year</div><div class="plan-savings">🎉 Pilot price · co-rent a tree and split the cost</div></div><div class="plan-body"><div class="plan-divider"></div><ul class="plan-features"><li><div class="pf-dot">✓</div>Your share of a real mango tree’s harvest</li><li><div class="pf-dot">✓</div>Guaranteed minimum harvest — from 10 kg</li><li><div class="pf-dot">✓</div>Your choice of variety</li><li><div class="pf-dot">✓</div>Raw mangoes, pickle, or ripe fruit</li><li><div class="pf-dot">✓</div>Rent solo, or co-rent and split the cost</li></ul><a href="#" onclick="openProducts();return false;" class="plan-cta secondary">Reserve for ₹199 →</a></div></div><div class="reserve-note fade"><div class="rn-icon">🌱</div><div class="rn-text"><h4>Reserve now · Pay at harvest</h4><p>Secure your tree with just ₹199 today. The remaining balance is due only when your harvest is packed and ready to ship — so there's no risk on your side.</p></div></div>
+</section><section class="section fade" id="produce" style="padding-top:0"><p class="eyebrow">What you receive</p><h2 class="h2">Three gifts from one tree</h2><p class="lead">Every mango on your tree can become one of three things — you choose each season.<br><span style="font-size:.78rem;color:var(--muted);display:block;margin-top:.4rem">All three options are available with the Rasam variety.</span></p><div class="gifts-grid"><div class="gift-item"><div class="gift-img"><img src="images/gift-raw.jpg" alt="Raw mangoes"/></div><div class="gift-name">Raw</div><p class="gift-line">Firm, tart kairi straight off the branch — for aam panna, chutneys, and raw mango rice. Delivered April.</p></div><div class="gift-item"><div class="gift-img"><img src="images/gift-ripe.jpg" alt="Ripe mangoes"/></div><div class="gift-name">Ripe</div><p class="gift-line">Paka aam, ripened slowly in paddy straw — no carbide, never gassed. Delivered May–June.</p></div><div class="gift-item"><div class="gift-img"><img src="images/gift-pickle.jpg" alt="Andhra avakaya pickle"/></div><div class="gift-name">Pickles <span class="gift-extra">+ charges extra</span></div><p class="gift-line">True Andhra avakaya made from your kairi — small-batch, no preservatives. Delivered Apr–May.</p></div></div></section><section class="section fade" id="varieties" style="padding-top:0"><p class="eyebrow">Choose your variety</p><h2 class="h2">Three personalities. One commitment.</h2><p class="lead">Each variety has a distinct character, use, and season. Pick the one that fits your kitchen.</p><div class="var-tabs"><button class="vtab on" onclick="showV('rasam',this)">Rasam</button><button class="vtab" onclick="showV('banganapalli',this)">Banganapalli</button><button class="vtab" onclick="showV('totapuri',this)">Totapuri <span style="opacity:.65;font-size:.85em">· soon</span></button></div><div id="vp-rasam" class="vpanel on"><div class="vimg"><img src="images/variety-rasam.jpg" alt="Rasam mango"/></div><div class="vinfo"><div class="vseason"><span class="vsm on">Apr</span><span class="vsm on">May</span><span class="vsm on">Jun</span><span class="vsm off">Jul</span></div><div class="vname">Rasam</div><div class="valias">Rasalu / Pedda Rasalu · Andhra Pradesh & Telangana · First of season</div><p class="vdesc">The first mango of the season, and the most versatile. So full of nectar you can press a small hole and drink it whole — <em>rasa</em> means juice. Fiberless, intensely sweet with a delicate tang.</p><div class="vuse-chips"><div class="vchip"><span class="vchip-dot dot-raw"></span>Raw — aam panna, kairi rice</div><div class="vchip"><span class="vchip-dot dot-pickle"></span>Raw → best for avakaya pickle</div><div class="vchip"><span class="vchip-dot dot-juice"></span>Ripened → squeeze and drink whole</div></div><div class="vbox best"><div class="vbox-lbl">Best enjoyed as</div><div class="vbox-txt">Juice — squeeze straight from the skin, blend for aamras or kulfi. When raw, makes the finest Andhra avakaya pickle.</div></div></div></div><div id="vp-banganapalli" class="vpanel"><div class="vimg"><img src="images/variety-banganapalli.jpg" alt="Banganapalli mango"/></div><div class="vinfo"><div class="vseason"><span class="vsm off">Apr</span><span class="vsm on">May</span><span class="vsm on">Jun</span><span class="vsm off">Jul</span></div><div class="vname">Banganapalli</div><div class="valias">Safeda / Benishan · Andhra Pradesh · GI Tagged 2017</div><p class="vdesc">India's first GI-tagged mango — large, golden, fibreless, with silky-smooth flesh and a gentle coconut-like sweetness. The king of southern mango markets, accounting for over 70% of AP's production.</p><div class="vuse-chips"><div class="vchip"><span class="vchip-dot dot-raw"></span>Cut mangoes — fresh slices, fruit bowls</div><div class="vchip"><span class="vchip-dot dot-juice"></span>Ripened — mango shakes, desserts</div></div><div class="vbox best"><div class="vbox-lbl">Best for</div><div class="vbox-txt">Fresh cut consumption and ripened eating. Dense, fibreless flesh holds shape beautifully — perfect sliced in a bowl or as a mango shake.</div></div><div class="vbox not"><div class="vbox-lbl">Not suitable for pickle</div><div class="vbox-txt">Too sweet and soft when raw — lacks the tartness avakaya needs.</div></div></div></div><div id="vp-totapuri" class="vpanel"><div class="vimg"><img src="images/variety-totapuri.jpg" alt="Totapuri mango"/></div><div class="vinfo"><div class="vseason"><span class="vsm off">Apr</span><span class="vsm off">May</span><span class="vsm on">Jun</span><span class="vsm on">Jul</span></div><div class="vname">Totapuri <span style="font-size:.45em;color:var(--sf);vertical-align:middle;letter-spacing:.04em;text-transform:uppercase">Coming soon</span></div><div class="valias">Kilimooku / Bangalora · Karnataka & AP · Closes the season</div><p class="vdesc">Named for its distinctive parrot-beak tip — <em>Tota</em> means parrot in Telugu. Bold, tangy, with firm golden flesh. Best enjoyed when still green. Arrives last, and leaves a lasting impression.</p><div class="vuse-chips"><div class="vchip"><span class="vchip-dot dot-raw"></span>Best eaten raw — green, firm, tangy</div><div class="vchip"><span class="vchip-dot dot-raw"></span>Kairi chaat with salt & chilli</div><div class="vchip"><span class="vchip-dot dot-raw"></span>Raw mango salads & chutneys</div></div><div class="vbox best"><div class="vbox-lbl">Best eaten raw</div><div class="vbox-txt">Slice when still green — eat with rock salt and green chilli, in kairi chaat or raw mango salads. Firm flesh stays intact even after cutting.</div></div></div></div>
+</section><div class="pledge"><div class="pledge-inner"><div class="pledge-script">🥭 आम्रः सर्वफलश्रेष्ठः 🥭</div><blockquote>"The mango is the finest of all fruits — but only when nature alone ripens it."</blockquote><cite>Our promise to every member</cite></div>
+</div><section class="section fade" id="how"><p class="eyebrow">How it works</p><h2 class="h2">Four simple steps</h2><p class="lead">You choose, we tend, nature delivers. Mangoes arrive at your door from April 2027.</p><div class="steps-row"><div class="step fade"><div class="step-n">1</div><h3>Pick your variety</h3><p>Rasam for juice & pickle, Banganapalli for slicing, Totapuri for raw eating — or mix with the two-tree plan.</p></div><div class="step fade"><div class="step-n">2</div><h3>Reserve for ₹199</h3><p>Lock your tree today. Pay the balance only when your harvest is packed and ready — no upfront risk.</p></div><div class="step fade"><div class="step-n">3</div><h3>Nature does the work</h3><p>Your tree grows through sun, rain, and seasons — unhurried, unforced. The best mangoes never rush.</p></div><div class="step fade"><div class="step-n">4</div><h3>Harvest at your door</h3><p>Raw mangoes in April, pickle in April–May, ripened fruit in May–June. Packed fresh, shipped free.</p></div></div>
+</section><div class="delivery-section"><div class="delivery-inner"><p class="eyebrow">A humble note on delivery</p><h2 class="h2" style="font-size:1.6rem">We'll be with you every step of the way</h2><p style="font-size:.9rem;color:var(--muted);line-height:1.8;margin-top:.5rem;max-width:640px">As these are perishable goods, we want to be upfront with you about what to expect.</p><div class="del-grid"><div class="del-box"><div class="del-box-icon">📦</div><h4>First delivery attempt matters</h4><p>We recommend being available for the first delivery attempt. Missed deliveries can affect the quality of fresh fruit — just a humble request from us.</p></div><div class="del-box"><div class="del-box-icon">📍</div><h4>Tracking & updates</h4><p>We'll track every shipment and keep you updated with timely notifications so you're never caught off guard. We stay with you until it reaches your door.</p></div><div class="del-box"><div class="del-box-icon">🤝</div><h4>Third-party logistics</h4><p>Deliveries are handled by third-party couriers. Some delays may be beyond our control — but we promise to stay by your side until delivery is complete.</p></div><div class="del-box"><div class="del-box-icon">🗓</div><h4>Delivery schedule</h4><p>Raw mangoes: <strong>April 2027</strong><br>Avakaya pickle: <strong>April–May 2027</strong><br>Ripened fruit: <strong>May–June 2027</strong></p></div></div></div>
+</div><section class="section fade"><p class="eyebrow">Why Vruksha</p><h2 class="h2">More than mangoes</h2><div class="why-grid"><div class="why-card fade"><div class="why-icon">🏡</div><h4>Your ancestral orchard, back</h4><p>Many of us grew up eating mangoes from a family tree. Vruksha gives city families that connection back — even from a flat in Hyderabad.</p></div><div class="why-card fade"><div class="why-icon">🤝</div><h4>Trust before transactions</h4><p>We're not just selling mangoes. We're building a relationship — with you, with the farmer, and with the land. Transparency is the only way we know how to grow.</p></div><div class="why-card fade"><div class="why-icon">🥭</div><h4>The mango you remember</h4><p>Before carbide. Before cold storage. Before the mango became a commodity. Vruksha exists to bring back the one that tasted like childhood.</p></div><div class="why-card fade"><div class="why-icon">🌍</div><h4>Trees that stay standing</h4><p>Every rented tree is an incentive to never cut it down. Your rental directly funds living trees and the life they carry across India.</p></div></div>
+</section><footer><div class="footer-brand"><div class="footer-logo-anim"><span class="footer-logo-fixed">Vruksha</span><span class="footer-emoji-wrap" id="footerEmojiWrap"><span class="footer-emoji fe-active" data-idx="0">🥭</span><span class="footer-emoji" data-idx="1">🌾</span><span class="footer-emoji" data-idx="2">🌶️</span></span><span class="footer-flip-wrap" id="footerFlipWrap"><span class="footer-flip-word ffw-in">వృక్ష</span></span></div><p>From the farm to your table — the way it was always meant to be.</p></div><ul class="flinks"><li><a onclick="openPolicy('pricing');return false;" role="button" style="cursor:pointer">Plans & pricing</a></li><li><a onclick="openPolicy('variety');return false;" role="button" style="cursor:pointer">Our produce</a></li><li><a onclick="openPolicy('variety');return false;" role="button" style="cursor:pointer">Varieties</a></li><li><a onclick="openPolicy('howitworks');return false;" role="button" style="cursor:pointer">How it works</a></li></ul><ul class="flinks"><li><a onclick="openPolicy('about');return false;" role="button" style="cursor:pointer">About this project</a></li><li><a onclick="openPolicy('farmers');return false;" role="button" style="cursor:pointer">For farmers</a></li><li><a onclick="openPolicy('faq');return false;" role="button" style="cursor:pointer">FAQ</a></li><li><a class="contact-link" href="mailto:hello.vruksha@gmail.com">Contact us</a></li></ul><ul class="flinks"><li class="flinks-head">Get in touch</li><li><a class="contact-link" href="tel:+919490926999">📞 +91 94909 26999</a></li><li><a class="contact-link" href="mailto:hello.vruksha@gmail.com">✉️ hello.vruksha@gmail.com</a></li><li><a class="contact-link" href="https://www.instagram.com/_vruksha_india" target="_blank" rel="noopener">📷 @_vruksha_india</a></li></ul><div class="footer-bottom"><span>© 2026 Vruksha. All rights reserved.</span><span>Made with 🥭 in India</span><div class="footer-legal"><a onclick="openPolicy('privacy')" role="button">Privacy Policy</a><a onclick="openPolicy('terms')" role="button">Terms &amp; Conditions</a><a onclick="openPolicy('refund')" role="button">Refund &amp; Cancellation</a><a onclick="openPolicy('shipping')" role="button">Shipping &amp; Delivery</a></div></div>
+</footer><script>
+// LOGO ANIMATIONS — emoji + word, synced
+(function(){
+// ── Words ──
+const words  = ['వృక్ష','ವೃಕ್ಷ','விருட்சம்','वृक्ष'];
+const labels = ['Telugu','Kannada','Tamil','Hindi'];
+const flipWrap = document.getElementById('logoFlipWrap');
+
+// ── Emojis ──
+const emojis    = ['🥭','🌾','🌶️'];
+const emojiWrap = document.getElementById('logoEmojiWrap');
+const emojiEls  = emojiWrap ? Array.from(emojiWrap.querySelectorAll('.logo-emoji')) : [];
+
+let wordIdx  = 0;
+let emojiIdx = 0;
+
+function cycleWord(){
+if(!flipWrap) return;
+const current = flipWrap.querySelector('.logo-flip-word');
+if(current){
+current.classList.remove('flip-in');
+current.classList.add('flip-out');
+setTimeout(()=>{ if(current.parentNode) current.parentNode.removeChild(current); }, 400);
+}
+wordIdx = (wordIdx + 1) % words.length;
+setTimeout(()=>{
+const next = document.createElement('span');
+next.className = 'logo-flip-word';
+next.textContent = words[wordIdx];
+next.title = labels[wordIdx];
+flipWrap.appendChild(next);
+next.getBoundingClientRect();
+next.classList.add('flip-in');
+}, 120);
+}
+
+// Emoji cycles every 3rd word flip (so mango → paddy → chilli → mango...)
+// Word flips every 2.8s, emoji every 2.8 * 1 = same tick but rotates through 3
+function cycleEmoji(){
+if(!emojiEls.length) return;
+const prev = emojiIdx;
+emojiIdx   = (emojiIdx + 1) % emojiEls.length;
+
+// exit old
+emojiEls[prev].classList.remove('e-active');
+emojiEls[prev].classList.add('e-exit');
+setTimeout(()=>{
+emojiEls[prev].classList.remove('e-exit');
+}, 420);
+
+// enter new — slight delay so it pops in after word flip starts
+setTimeout(()=>{
+emojiEls[emojiIdx].classList.add('e-active');
+}, 160);
+}
+
+// Run both on same interval — emoji only changes every other tick
+let tick = 0;
+setInterval(()=>{
+tick++;
+cycleWord();
+// emoji changes every word flip (1:1 ratio, 3 emojis loop)
+cycleEmoji();
+}, 2800);
+})();
+
+// STRIP BRAND LOGO — same animation engine, independent cycle
+(function(){
+var words  = ['వృక్ష','ವೃಕ್ಷ','விருட்சம்','वृक्ष'];
+var labels = ['Telugu','Kannada','Tamil','Hindi'];
+var flipWrap  = document.getElementById('stripFlipWrap');
+var emojiWrap = document.getElementById('stripEmojiWrap');
+if(!flipWrap || !emojiWrap) return;
+var emojiEls = Array.from(emojiWrap.querySelectorAll('.logo-emoji'));
+var wordIdx=0, emojiIdx=0;
+function cycleWord(){
+var cur = flipWrap.querySelector('.logo-flip-word');
+if(cur){ cur.classList.remove('flip-in'); cur.classList.add('flip-out');
+setTimeout(function(){ if(cur.parentNode) cur.parentNode.removeChild(cur); }, 400); }
+wordIdx = (wordIdx+1) % words.length;
+setTimeout(function(){
+var next = document.createElement('span');
+next.className = 'logo-flip-word';
+next.style.color = 'var(--sfl)';
+next.textContent = words[wordIdx];
+next.title = labels[wordIdx];
+flipWrap.appendChild(next);
+next.getBoundingClientRect();
+next.classList.add('flip-in');
+}, 120);
+}
+function cycleEmoji(){
+var prev = emojiIdx;
+emojiIdx = (emojiIdx+1) % emojiEls.length;
+emojiEls[prev].classList.remove('e-active');
+emojiEls[prev].classList.add('e-exit');
+setTimeout(function(){ emojiEls[prev].classList.remove('e-exit'); }, 420);
+setTimeout(function(){ emojiEls[emojiIdx].classList.add('e-active'); }, 160);
+}
+// offset by 1.4s so it doesn't sync with nav logo
+setTimeout(function(){
+setInterval(function(){ cycleWord(); cycleEmoji(); }, 2800);
+}, 1400);
+})();
+
+// PRODUCTS HERO LOGO — same animation engine, independent cycle
+(function(){
+var words  = ['వృక్ష','ವೃಕ್ಷ','விருட்சம்','वृक्ष'];
+var labels = ['Telugu','Kannada','Tamil','Hindi'];
+var _prodAnimStarted = false;
+
+function startProdAnim(){
+if(_prodAnimStarted) return;
+_prodAnimStarted = true;
+
+var flipWrap  = document.getElementById('prodFlipWrap');
+var emojiWrap = document.getElementById('prodEmojiWrap');
+if(!flipWrap || !emojiWrap) return;
+
+var emojiEls = Array.from(emojiWrap.querySelectorAll('.logo-emoji'));
+var wordIdx=0, emojiIdx=0;
+
+function cycleWord(){
+var cur = flipWrap.querySelector('.logo-flip-word');
+if(cur){
+cur.classList.remove('flip-in');
+cur.classList.add('flip-out');
+setTimeout(function(){ if(cur.parentNode) cur.parentNode.removeChild(cur); }, 400);
+}
+wordIdx = (wordIdx+1) % words.length;
+setTimeout(function(){
+var next = document.createElement('span');
+next.className = 'logo-flip-word';
+next.textContent = words[wordIdx];
+flipWrap.appendChild(next);
+next.getBoundingClientRect();
+next.classList.add('flip-in');
+}, 120);
+}
+
+function cycleEmoji(){
+var prev = emojiIdx;
+emojiIdx = (emojiIdx+1) % emojiEls.length;
+emojiEls[prev].classList.remove('e-active');
+emojiEls[prev].classList.add('e-exit');
+setTimeout(function(){ emojiEls[prev].classList.remove('e-exit'); }, 420);
+setTimeout(function(){ emojiEls[emojiIdx].classList.add('e-active'); }, 160);
+}
+
+// Offset 900ms from nav so they never sync
+setTimeout(function(){
+setInterval(function(){ cycleWord(); cycleEmoji(); }, 2800);
+}, 900);
+}
+
+// Start animations when products page opens
+var _origOpen = window.openProducts;
+window.openProducts = function(){
+_origOpen && _origOpen();
+setTimeout(startProdAnim, 300);
+};
+})();
+
+// FOOTER LOGO ANIMATIONS — mirrors nav logo
+(function(){
+const words  = ['వృక్ష','ವೃಕ್ಷ','விருட்சம்','वृक्ष'];
+const labels = ['Telugu','Kannada','Tamil','Hindi'];
+
+function makeFooterAnim(flipWrapId, emojiWrapId, offset){
+const flipWrap  = document.getElementById(flipWrapId);
+const emojiWrap = document.getElementById(emojiWrapId);
+const emojiEls  = emojiWrap ? Array.from(emojiWrap.querySelectorAll('.footer-emoji')) : [];
+let wordIdx = 0, emojiIdx = 0;
+
+function cycleWord(){
+if(!flipWrap) return;
+const current = flipWrap.querySelector('.footer-flip-word');
+if(current){
+current.classList.remove('ffw-in');
+current.classList.add('ffw-out');
+setTimeout(()=>{ if(current.parentNode) current.parentNode.removeChild(current); }, 400);
+}
+wordIdx = (wordIdx + 1) % words.length;
+setTimeout(()=>{
+const next = document.createElement('span');
+next.className = 'footer-flip-word';
+next.textContent = words[wordIdx];
+next.title = labels[wordIdx];
+flipWrap.appendChild(next);
+next.getBoundingClientRect();
+next.classList.add('ffw-in');
+}, 120);
+}
+
+function cycleEmoji(){
+if(!emojiEls.length) return;
+const prev = emojiIdx;
+emojiIdx = (emojiIdx + 1) % emojiEls.length;
+emojiEls[prev].classList.remove('fe-active');
+emojiEls[prev].classList.add('fe-exit');
+setTimeout(()=>{ emojiEls[prev].classList.remove('fe-exit'); }, 420);
+setTimeout(()=>{ emojiEls[emojiIdx].classList.add('fe-active'); }, 160);
+}
+
+setTimeout(()=>{
+setInterval(()=>{ cycleWord(); cycleEmoji(); }, 2800);
+}, offset);
+}
+
+// Home footer — offset 1400ms so it doesn't sync with nav
+makeFooterAnim('footerFlipWrap', 'footerEmojiWrap', 1400);
+
+// Products footer — start when overlay opens, not on page load
+var _prodFooterInterval = null;
+var _origOpenForFooter = window.openProducts;
+window.openProducts = function(){
+if(_origOpenForFooter) _origOpenForFooter.apply(this, arguments);
+// Clear any previous interval and restart fresh
+if(_prodFooterInterval) clearInterval(_prodFooterInterval);
+var flipWrap  = document.getElementById('prodFooterFlipWrap');
+var emojiWrap = document.getElementById('prodFooterEmojiWrap');
+var emojiEls  = emojiWrap ? Array.from(emojiWrap.querySelectorAll('.footer-emoji')) : [];
+var wordIdx = 0, emojiIdx = 0;
+// Reset to initial state
+emojiEls.forEach(function(e,i){ e.classList.toggle('fe-active', i===0); e.classList.remove('fe-exit'); });
+if(flipWrap){ flipWrap.innerHTML = '<span class="footer-flip-word ffw-in">వృక్ష</span>'; }
+_prodFooterInterval = setInterval(function(){
+// cycle word
+if(flipWrap){
+var current = flipWrap.querySelector('.footer-flip-word');
+if(current){ current.classList.remove('ffw-in'); current.classList.add('ffw-out'); setTimeout(function(){ if(current.parentNode) current.parentNode.removeChild(current); }, 400); }
+wordIdx = (wordIdx + 1) % words.length;
+setTimeout(function(){
+var next = document.createElement('span');
+next.className = 'footer-flip-word';
+next.textContent = words[wordIdx];
+next.title = labels[wordIdx];
+flipWrap.appendChild(next);
+next.getBoundingClientRect();
+next.classList.add('ffw-in');
+}, 120);
+}
+// cycle emoji
+if(emojiEls.length){
+var prev = emojiIdx;
+emojiIdx = (emojiIdx + 1) % emojiEls.length;
+emojiEls[prev].classList.remove('fe-active');
+emojiEls[prev].classList.add('fe-exit');
+setTimeout(function(){ emojiEls[prev].classList.remove('fe-exit'); }, 420);
+setTimeout(function(){ emojiEls[emojiIdx].classList.add('fe-active'); }, 160);
+}
+}, 2800);
+};
+})();
+
+function showV(id,btn){
+document.querySelectorAll('.vpanel').forEach(p=>p.classList.remove('on'));
+document.querySelectorAll('.vtab').forEach(b=>b.classList.remove('on'));
+document.getElementById('vp-'+id).classList.add('on');
+btn.classList.add('on');
+}
+const io=new IntersectionObserver(entries=>{
+entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})
+},{threshold:0.08});
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+// Popup close — unique scatter animation
+function closePopup(){
+const p = document.getElementById('introPopup');
+const b = document.getElementById('introBackdrop');
+if(!p || p._closing) return;
+p._closing = true;
+
+// Apply unique close animation
+p.style.animation = 'popupSlideOut .45s ease forwards';
+
+// Backdrop fades out slightly after
+if(b){
+setTimeout(()=>{
+b.style.animation = 'fadeOutBd .4s ease forwards';
+}, 150);
+setTimeout(()=>{ if(b.parentNode) b.remove(); }, 450);
+}
+setTimeout(()=>{ if(p.parentNode) p.remove(); }, 480);
+}
+
+// Bottom nav active state
+function setActive(el){
+document.querySelectorAll('.bn-item').forEach(i=>i.classList.remove('active'));
+el.classList.add('active');
+}
+
+// Show popup on first scroll down, then stop listening
+var popupShown = false;
+function showPopup(){
+if(popupShown) return;
+var p = document.getElementById('introPopup');
+var b = document.getElementById('introBackdrop');
+if(!p) return;
+popupShown = true;
+p.style.animation = 'popupSlideIn .6s cubic-bezier(.22,1,.36,1) forwards';
+p.style.opacity   = '1';
+p.style.pointerEvents = 'auto';
+if(b){
+b.style.display = 'block';
+}
+}
+
+// Trigger on first scroll
+window.addEventListener('scroll', function onFirstScroll(){
+if(window.scrollY > 30){
+showPopup();
+window.removeEventListener('scroll', onFirstScroll);
+}
+}, {passive:true});
+
+// Bottom-nav highlight changes only on tap (scroll no longer moves it)
+
+// Position body content below strip
+(function(){
+function positionHeader(){
+var strip = document.querySelector('.strip');
+if(!strip) return;
+document.body.style.paddingTop = strip.getBoundingClientRect().height + 'px';
+}
+positionHeader();
+window.addEventListener('resize', positionHeader);
+})();
+
+// ═══ PRODUCTS PAGE ════════════════════════════════════════════
+var cart = [];
+
+var _spC = ['#f472b6','#a78bfa','#34d399','#fb923c','#fbbf24','#38bdf8'];
+var _btfShown = false;
+
+function openProducts(){
+if(_btfShown){
+var overlay = document.getElementById('productsOverlay');
+overlay.classList.add('open');
+return;
+}
+_btfShown = true;
+
+var el    = document.getElementById('butterfly');
+var scrim = document.getElementById('btf-scrim');
+if(!el) return;
+
+var W = window.innerWidth, H = window.innerHeight;
+
+var prodBtn = document.getElementById('bn-shop');
+var br = prodBtn ? prodBtn.getBoundingClientRect() : {left:W*0.3, top:H-55, width:60};
+var sx = br.left + br.width/2;
+var sy = br.top + 10;
+var ex = W/2, ey = H/2;
+
+// Reset
+el.style.cssText = 'position:fixed;z-index:2000;pointer-events:none;will-change:transform,opacity;opacity:0;top:0;left:0;font-size:2.8rem;line-height:1;';
+el.style.transform = 'translate(calc('+sx+'px - 50%),calc('+sy+'px - 50%)) scale(0)';
+el.classList.remove('box-open');
+el.getBoundingClientRect();
+
+scrim.classList.add('dim');
+
+// Phase 1: Pop out of Products tab
+el.style.transition = 'opacity .18s ease, transform .38s cubic-bezier(.34,1.56,.64,1)';
+el.style.opacity = '1';
+el.style.transform = 'translate(calc('+sx+'px - 50%),calc('+sy+'px - 50%)) scale(1)';
+
+setTimeout(function(){
+el.style.transition = 'none';
+
+// Phase 2: Smooth arc to centre — no rotation
+_btfFly(el, sx, sy, ex, ey, 900, function(){
+
+// Phase 3: Burst mangoes then immediately open overlay
+_mangoBoxBurst(el, ex, ey, function(){
+document.getElementById('productsOverlay').classList.add('open');
+el.style.opacity = '0';
+el.classList.remove('box-open');
+scrim.style.transition = 'background .35s ease';
+scrim.classList.remove('dim');
+});
+});
+}, 400);
+}
+
+function _mangoBoxBurst(el, cx, cy, cb){
+el.classList.add('box-open');
+
+var W = window.innerWidth, H = window.innerHeight;
+
+// Three soft ripple rings
+[0,80,180].forEach(function(delay,i){
+var sz=60+i*20;
+var colors=['rgba(255,200,40,.6)','rgba(100,200,80,.5)','rgba(255,140,60,.4)'];
+setTimeout(function(){
+var r=document.createElement('div');
+r.className='btf-ripple';
+r.style.cssText='left:'+(cx-sz/2)+'px;top:'+(cy-sz/2)+'px;width:'+sz+'px;height:'+sz+'px;border:2.5px solid '+colors[i]+';animation:ripple .9s cubic-bezier(.2,.6,.4,1) forwards;';
+document.body.appendChild(r);
+setTimeout(function(){r.remove();},1000);
+},delay);
+});
+
+// 85 mangoes - fountain pattern, float and fade
+var count=85;
+var items=['\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u{1F96D}','\u2728'];
+for(var i=0;i<count;i++){
+(function(i){
+var angle=(Math.random()*360)*Math.PI/180;
+var dist=80+Math.random()*Math.max(W,H)*0.78;
+var mx=Math.cos(angle)*dist;
+var my=Math.sin(angle)*dist;
+var drop=30+Math.random()*90;
+var size=0.7+Math.random()*2.1;
+var dur=2200+Math.random()*1000;
+var delay=Math.random()*80;
+var item=items[Math.floor(Math.random()*items.length)];
+var sp=document.createElement('div');
+sp.className='btf-mango-burst';
+sp.textContent=item;
+sp.style.cssText=[
+'left:'+(cx-14)+'px',
+'top:'+(cy-14)+'px',
+'font-size:'+size+'rem',
+'--mx:'+mx+'px',
+'--my:'+my+'px',
+'--drop:'+drop+'px',
+'animation:mangoFloat '+dur+'ms cubic-bezier(.1,.7,.3,1) both',
+'animation-delay:'+delay+'ms'
+].join(';');
+document.body.appendChild(sp);
+setTimeout(function(){sp.remove();},dur+delay+150);
+})(i);
+}
+
+setTimeout(function(){
+el.style.opacity='0';
+el.classList.remove('box-open');
+_playBurst();
+},60);
+
+setTimeout(cb,300);
+}
+
+function _playBurst(){
+try{
+var ctx=new (window.AudioContext||window.webkitAudioContext)();
+var now=ctx.currentTime;
+
+// 1. Soft low thump
+(function(){
+var o=ctx.createOscillator(),g=ctx.createGain();
+o.type='sine';
+o.frequency.setValueAtTime(90,now);
+o.frequency.exponentialRampToValueAtTime(38,now+.3);
+g.gain.setValueAtTime(0,now);
+g.gain.linearRampToValueAtTime(.5,now+.01);
+g.gain.exponentialRampToValueAtTime(.001,now+.35);
+o.connect(g);g.connect(ctx.destination);
+o.start(now);o.stop(now+.35);
+})();
+
+// 2. Sweet G major harp arpeggio G3 B3 D4 G4
+[196,246.9,293.7,392].forEach(function(f,i){
+var o=ctx.createOscillator(),g=ctx.createGain();
+o.type='sine';o.frequency.value=f;
+var t=now+i*.07;
+g.gain.setValueAtTime(0,t);
+g.gain.linearRampToValueAtTime(.12,t+.03);
+g.gain.exponentialRampToValueAtTime(.001,t+1.4);
+o.connect(g);g.connect(ctx.destination);
+o.start(t);o.stop(t+1.4);
+});
+
+// 3. High harp echo G5 B5 D6
+[784,987.8,1174.7].forEach(function(f,i){
+var o=ctx.createOscillator(),g=ctx.createGain();
+o.type='sine';o.frequency.value=f;
+var t=now+.12+i*.065;
+g.gain.setValueAtTime(0,t);
+g.gain.linearRampToValueAtTime(.07,t+.025);
+g.gain.exponentialRampToValueAtTime(.001,t+1.1);
+o.connect(g);g.connect(ctx.destination);
+o.start(t);o.stop(t+1.1);
+});
+
+// 4. Soft fairy dust
+(function(){
+var buf=ctx.createBuffer(1,ctx.sampleRate*.8,ctx.sampleRate);
+var d=buf.getChannelData(0);
+for(var i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+var src=ctx.createBufferSource();src.buffer=buf;
+var hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=6000;
+var g=ctx.createGain();
+g.gain.setValueAtTime(0,now+.05);
+g.gain.linearRampToValueAtTime(.12,now+.1);
+g.gain.exponentialRampToValueAtTime(.001,now+.8);
+src.connect(hp);hp.connect(g);g.connect(ctx.destination);
+src.start(now+.05);
+})();
+
+// 5. Warm bell D5
+(function(){
+var o=ctx.createOscillator(),g=ctx.createGain();
+o.type='sine';o.frequency.value=587.3;
+g.gain.setValueAtTime(0,now+.08);
+g.gain.linearRampToValueAtTime(.11,now+.1);
+g.gain.exponentialRampToValueAtTime(.001,now+1.8);
+o.connect(g);g.connect(ctx.destination);
+o.start(now+.08);o.stop(now+1.8);
+})();
+
+setTimeout(function(){ctx.close();},2000);
+}catch(e){}
+}
+
+function _btfFly(el, sx, sy, ex, ey, dur, cb){
+var W=window.innerWidth, H=window.innerHeight;
+var cp1x=sx+(ex-sx)*.3+W*.15, cp1y=sy-H*.25;
+var cp2x=sx+(ex-sx)*.7-W*.05, cp2y=ey-H*.1;
+var t0=null;
+
+function bez(t,a,b,c,d){var u=1-t;return u*u*u*a+3*u*u*t*b+3*u*t*t*c+t*t*t*d}
+function eio(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+
+function frame(ts){
+if(!t0)t0=ts;
+var t=Math.min((ts-t0)/dur,1), e=eio(t);
+var x=bez(e,sx,cp1x,cp2x,ex);
+var y=bez(e,sy,cp1y,cp2y,ey);
+var base='translate(calc('+x+'px - 50%),calc('+y+'px - 50%))';
+el.style.transform = base;
+t<1 ? requestAnimationFrame(frame) : cb();
+}
+requestAnimationFrame(frame);
+}
+
+function _btfFlyOff(el, sx, sy, dur, cb){
+var t0=null;
+function frame(ts){
+if(!t0)t0=ts;
+var t=Math.min((ts-t0)/dur,1);
+var e=t*t;
+var y=sy-e*window.innerHeight*.75;
+var x=sx+Math.sin(t*Math.PI)*20;
+el.style.transform='translate(calc('+x+'px - 50%),calc('+y+'px - 50%)) scale('+(1-e*.7)+')';
+el.style.opacity=String(1-e);
+t<1 ? requestAnimationFrame(frame) : cb();
+}
+requestAnimationFrame(frame);
+}
+
+function _btfSpark(x,y){
+var sp=document.createElement('div');
+sp.className='b-sparkle';
+var sz=3+Math.random()*5;
+var dx=(Math.random()-.5)*22, dy=-5-Math.random()*14;
+sp.style.cssText='width:'+sz+'px;height:'+sz+'px;left:'+(x-sz/2)+'px;top:'+(y-sz/2)+'px;background:'+_spC[0|Math.random()*6]+';--dx:'+dx+'px;--dy:'+dy+'px;';
+document.body.appendChild(sp);
+setTimeout(function(){sp.remove()},820);
+}
+
+function closeProducts(){
+var overlay = document.getElementById('productsOverlay');
+if(!overlay) return;
+overlay.classList.remove('open');
+setTimeout(function(){
+// reset active tab to Home
+document.querySelectorAll('.bn-item').forEach(function(i){ i.classList.remove('active'); });
+var home = document.getElementById('bn-home');
+if(home) home.classList.add('active');
+}, 450);
+}
+
+var _pickedVar = null;
+
+// Mango variety photo crossfade slideshows
+(function(){
+function initSlideshow(cls, timerKey, offset){
+if(window[timerKey]) return;
+var slides = document.querySelectorAll('.'+cls);
+if(!slides || slides.length < 2) return;
+var cur = 0;
+// Offset start so varieties don't transition at same time
+setTimeout(function(){
+window[timerKey] = setInterval(function(){
+slides[cur].classList.remove('active');
+cur = (cur + 1) % slides.length;
+slides[cur].classList.add('active');
+}, 3000);
+}, offset);
+}
+
+function initAll(){
+initSlideshow('rasam-slide', '_rasamTimer', 0);
+initSlideshow('bang-slide',  '_bangTimer',  1100);
+}
+
+var origOpen = window.openProducts;
+window.openProducts = function(){
+if(origOpen) origOpen();
+setTimeout(initAll, 400);
+};
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(initAll, 500); });
+setTimeout(initAll, 500);
+})();
+
+var _treeCartIds = {}; // tracks cart id per tree variant key
+
+function pickVar(name, el){
+document.querySelectorAll('.var-card').forEach(function(c){c.classList.remove('selected');});
+el.classList.add('selected');
+_pickedVar = name;
+// Show stepper or Add button depending on whether this combo is already in cart
+var cartKey = 'tree-'+name+'-'+_pickedPayment;
+var inCart = cart.find(function(c){ return c.id === cartKey; });
+var btn = document.getElementById('btn-tree');
+var stepper = document.getElementById('stepper-tree');
+var countEl = document.getElementById('cs-count-tree');
+var labelEl = document.getElementById('cs-label-tree');
+var names = {rasam:'Rasam',banganapalli:'Banganapalli',totapuri:'Totapuri'};
+if(inCart){
+if(btn) btn.classList.add('gone');
+if(stepper) stepper.classList.add('show');
+if(countEl) countEl.textContent = inCart.qty;
+var label = names[name]+' Tree';
+if(labelEl) labelEl.textContent = label;
+_stepperItems['tree'] = cartKey;
+_stepperPrices['tree'] = {unit: inCart.price};
+} else {
+if(btn) btn.classList.remove('gone');
+if(stepper) stepper.classList.remove('show');
+_stepperItems['tree'] = null;
+}
+}
+
+// Scroll dot sync
+(function(){
+function initScrollDots(){
+var scroller = document.getElementById('varCardsScroll');
+var dots = document.querySelectorAll('.vsh-dot');
+if(!scroller || !dots.length) return;
+scroller.addEventListener('scroll', function(){
+var idx = Math.round(scroller.scrollLeft / scroller.offsetWidth);
+dots.forEach(function(d,i){
+d.classList.toggle('on', i===idx);
+});
+}, {passive:true});
+}
+var origOpen = window.openProducts;
+window.openProducts = function(){
+if(origOpen) origOpen();
+setTimeout(initScrollDots, 400);
+};
+setTimeout(initScrollDots, 600);
+})();
+
+var _pickedPayment = 'reserve';
+
+function pickPayment(mode, el){
+document.querySelectorAll('.pay-opt').forEach(function(b){b.classList.remove('active');});
+el.classList.add('active');
+_pickedPayment = mode;
+// Re-sync stepper to new combo
+if(_pickedVar) pickVar(_pickedVar, document.getElementById('vc-'+_pickedVar));
+}
+
+
+/* ── CO-RENT ── */
+var _corentOn    = false;
+var _corentSlots = 1;
+var _corentTaken = 0;
+(function(){
+try{ var d=JSON.parse(localStorage.getItem('vruksha_corent')||'{}'); _corentTaken=d.taken||0; }catch(e){}
+})();
+
+function toggleCorent(){
+_corentOn = !_corentOn;
+var row   = document.getElementById('corentToggleRow');
+var panel = document.getElementById('corentPanel');
+if(row)   row.classList.toggle('active', _corentOn);
+if(panel) panel.classList.toggle('open', _corentOn);
+if(_corentOn){
+renderCorentMap();
+// Scroll so variety cards stay visible — scroll the prod-page-body to top of tree section
+setTimeout(function(){
+var body = document.querySelector('.prod-page-body');
+var catTree = document.getElementById('cat-tree');
+if(body && catTree){
+var offset = catTree.offsetTop - 16;
+body.scrollTo({top: Math.max(0, offset - body.offsetTop), behavior:'smooth'});
+}
+}, 50);
+}
+updateCorentPrice();
+}
+
+function pickCorent(n, el){
+document.querySelectorAll('.corent-slot-btn').forEach(function(b){b.classList.remove('sel');});
+el.classList.add('sel');
+_corentSlots = n;
+renderCorentMap();
+updateCorentPrice();
+}
+
+function corentEach(n){return ({1:3999,2:1999,4:999})[n]||Math.round(3999/n);}
+function updateCorentPrice(){
+var perPerson = _corentOn && _corentSlots > 1 ? corentEach(_corentSlots) : 3999;
+var fullBtn = document.getElementById('pay-full');
+if(_corentOn && _corentSlots > 1){
+if(fullBtn) fullBtn.textContent = 'Pay in full — ₹'+perPerson.toLocaleString('en-IN');
+} else {
+if(fullBtn) fullBtn.textContent = 'Pay in full';
+}
+}
+
+function renderCorentMap(){
+var vis    = document.getElementById('corentSlotsVis');
+var status = document.getElementById('corentStatus');
+if(!vis) return;
+var total   = _corentSlots;
+var taken   = Math.min(_corentTaken, total - 1);
+var pending = total - taken - 1;
+var avatars = ['🌿','🍃','🌱'];
+var html = '';
+for(var i=0;i<taken;i++){
+html += '<div class="corent-slot-vis taken"><span class="csv-avatar">'+avatars[i]+'</span><span class="csv-label">Renter '+(i+1)+'</span></div>';
+}
+html += '<div class="corent-slot-vis you"><span class="csv-avatar">🙋</span><span class="csv-label">You</span></div>';
+for(var j=0;j<pending;j++){
+html += '<div class="corent-slot-vis"><span class="csv-avatar" style="opacity:.3">🌳</span><span class="csv-label">Open</span></div>';
+}
+vis.innerHTML = html;
+if(status){
+if(total===1){
+status.innerHTML = 'Full tree · <strong>₹3,999</strong> · just you';
+} else {
+var filled = taken+1;
+var left   = total-filled;
+var pp = corentEach(total).toLocaleString('en-IN');
+if(left===0){
+status.innerHTML = 'Tree full · <strong>'+total+'/'+total+' renters</strong> · ₹'+pp+' per person';
+} else {
+status.innerHTML = '<strong>'+left+' spot'+(left>1?'s':'')+' open</strong> · ₹'+pp+'/person';
+}
+}
+}
+}
+
+function addTreeToCart(){
+if(!_pickedVar){
+alert('Please choose a variety first 🥭');
+return;
+}
+var names = {rasam:'Rasam',banganapalli:'Banganapalli',totapuri:'Totapuri'};
+var isReserve = (_pickedPayment === 'reserve');
+var perPerson = (_corentOn && _corentSlots > 1) ? corentEach(_corentSlots) : 3999;
+var price = isReserve ? 199 : perPerson;
+var coDesc = (_corentOn && _corentSlots > 1) ? ' · co-rent ×'+_corentSlots+' · ₹'+corentEach(_corentSlots).toLocaleString('en-IN')+'/person' : '';
+var label = names[_pickedVar]+' Tree'+coDesc;
+var desc  = names[_pickedVar]+' · '+(isReserve?'reservation · balance at harvest':'full payment')+coDesc;
+if(_corentOn && _corentSlots > 1){
+var newTaken = Math.min(_corentTaken+1, _corentSlots-1);
+_corentTaken = newTaken;
+try{localStorage.setItem('vruksha_corent',JSON.stringify({taken:newTaken}));}catch(e){}
+}
+var cartId = 'tree-'+_pickedVar+'-corent'+(_corentOn?_corentSlots:1)+'-'+_pickedPayment;
+addToCart({id:cartId,name:label,emoji:'🌳',price:price,desc:desc},'tree',label);
+}
+
+var _pickedCereal = null;
+var _pickedCerealQty = '500g';
+var _pickedPickleQty = '500g';
+// Init cereal price display for default ½ kg selection
+document.addEventListener('DOMContentLoaded', function(){
+var val = document.getElementById('cereal-price-val');
+if(val) val.textContent = '30';
+});
+
+function pickQty(section, qty, el){
+document.querySelectorAll('#'+section+'-qty-500g, #'+section+'-qty-1kg, #'+section+'-qty-2kg, #'+section+'-qty-5kg').forEach(function(b){ if(b) b.classList.remove('sel'); });
+el.classList.add('sel');
+
+if(section === 'pickle'){
+_pickedPickleQty = qty;
+var pickleRates = {
+avakaya:    {'500g':349,'1kg':649},
+pandumirchi:{'500g':299,'1kg':549}
+};
+var val = document.getElementById('pickle-price-val');
+// Show stepper if this qty+variety combo is already in cart, else show Add button
+if(_pickedPickle){
+var cartKey = 'pickle-'+_pickedPickle+'-'+qty;
+var inCart = cart.find(function(c){ return c.id === cartKey; });
+var btn = document.getElementById('btn-pickle');
+var stepper = document.getElementById('stepper-pickle');
+var countEl = document.getElementById('cs-count-pickle');
+var labelEl = document.getElementById('cs-label-pickle');
+if(inCart){
+if(btn) btn.classList.add('gone');
+if(stepper) stepper.classList.add('show');
+if(countEl) countEl.textContent = inCart.qty;
+_stepperItems['pickle'] = cartKey;
+_stepperPrices['pickle'] = {unit: inCart.price};
+if(val) val.textContent = inCart.price * inCart.qty;
+} else {
+if(btn) btn.classList.remove('gone');
+if(stepper) stepper.classList.remove('show');
+_stepperItems['pickle'] = null;
+if(val) val.textContent = pickleRates[_pickedPickle][qty];
+}
+} else {
+var val = document.getElementById('pickle-price-val');
+if(val) val.textContent = '—';
+}
+
+} else {
+// cereal
+_pickedCerealQty = qty;
+var cerealRates    = {'500g':30,'1kg':60,'2kg':110,'5kg':250};
+var cerealOriginal = {'500g':null,'1kg':null,'2kg':120,'5kg':300};
+var cerealSave     = {'500g':null,'1kg':null,'2kg':'Save ₹10','5kg':'Save ₹50'};
+var val  = document.getElementById('cereal-price-val');
+var orig = document.getElementById('cereal-price-orig');
+var save = document.getElementById('cereal-price-save');
+// Show stepper if this qty+variety combo is already in cart, else show Add button
+if(_pickedCereal){
+var cartKey = 'cereal-'+_pickedCereal+'-'+qty;
+var inCart = cart.find(function(c){ return c.id === cartKey; });
+var btn = document.getElementById('btn-cereal');
+var stepper = document.getElementById('stepper-cereal');
+var countEl = document.getElementById('cs-count-cereal');
+var cerealLabels2 = {'500g':'½ kg bag','1kg':'1 kg bag','2kg':'2 kg bag','5kg':'5 kg bag'};
+var labelElC = document.getElementById('cs-label-cereal');
+if(inCart){
+if(btn) btn.classList.add('gone');
+if(stepper) stepper.classList.add('show');
+if(countEl) countEl.textContent = inCart.qty;
+if(labelElC) labelElC.textContent = 'Brown Rice · ' + cerealLabels2[qty];
+_stepperItems['cereal'] = cartKey;
+_stepperPrices['cereal'] = {unit: inCart.price, orig: inCart.origPrice||null, save: inCart.saveAmt||null};
+if(val) val.textContent = inCart.price * inCart.qty;
+if(orig){ orig.textContent = inCart.origPrice ? '₹'+(inCart.origPrice*inCart.qty) : ''; orig.style.display = inCart.origPrice ? 'inline' : 'none'; }
+if(save){ save.textContent = inCart.saveAmt ? 'Save ₹'+(inCart.saveAmt*inCart.qty) : ''; save.style.display = inCart.saveAmt ? 'inline-flex' : 'none'; }
+} else {
+if(btn) btn.classList.remove('gone');
+if(stepper) stepper.classList.remove('show');
+if(labelElC) labelElC.textContent = '';
+_stepperItems['cereal'] = null;
+if(val) val.textContent = cerealRates[qty];
+if(orig){ orig.textContent = cerealOriginal[qty] ? '₹'+cerealOriginal[qty] : ''; orig.style.display = cerealOriginal[qty] ? 'inline' : 'none'; }
+if(save){ save.textContent = cerealSave[qty]||''; save.style.display = cerealSave[qty] ? 'inline-flex' : 'none'; }
+}
+} else {
+if(val) val.textContent = cerealRates[qty];
+if(orig){ orig.textContent = cerealOriginal[qty] ? '₹'+cerealOriginal[qty] : ''; orig.style.display = cerealOriginal[qty] ? 'inline' : 'none'; }
+if(save){ save.textContent = cerealSave[qty]||''; save.style.display = cerealSave[qty] ? 'inline-flex' : 'none'; }
+}
+}
+}
+
+var _cerealCartIds = {};
+
+function pickCereal(name, el){
+document.querySelectorAll('#cerealCardsScroll .var-card').forEach(function(c){c.classList.remove('selected');});
+el.classList.add('selected');
+_pickedCereal = name;
+// Sync stepper to current qty combo
+var cartKey = 'cereal-'+name+'-'+_pickedCerealQty;
+var inCart = cart.find(function(c){ return c.id === cartKey; });
+var btn = document.getElementById('btn-cereal');
+var stepper = document.getElementById('stepper-cereal');
+var countEl = document.getElementById('cs-count-cereal');
+var labelEl = document.getElementById('cs-label-cereal');
+if(inCart){
+if(btn) btn.classList.add('gone');
+if(stepper) stepper.classList.add('show');
+if(countEl) countEl.textContent = inCart.qty;
+if(labelEl) labelEl.textContent = inCart.name + ' · ' + inCart.desc;
+_stepperItems['cereal'] = cartKey;
+_stepperPrices['cereal'] = {unit: inCart.price, orig: inCart.origPrice||null, save: inCart.saveAmt||null};
+} else {
+if(btn) btn.classList.remove('gone');
+if(stepper) stepper.classList.remove('show');
+_stepperItems['cereal'] = null;
+}
+}
+
+function addCerealToCart(){
+if(!_pickedCereal){
+alert('Please choose a grain first 🌾');
+return;
+}
+var prices    = {'500g':30,  '1kg':60,  '2kg':110, '5kg':250};
+var originals = {'500g':null,'1kg':null,'2kg':120,  '5kg':300};
+var saves     = {'500g':null,'1kg':null,'2kg':10,   '5kg':50};
+var labels    = {'500g':'½ kg bag','1kg':'1 kg bag','2kg':'2 kg bag','5kg':'5 kg bag'};
+var price = prices[_pickedCerealQty];
+var desc  = 'Farm-fresh · ' + labels[_pickedCerealQty];
+addToCart({id:'cereal-'+_pickedCereal+'-'+_pickedCerealQty, name:'Brown Rice', emoji:'🌾', price:price, desc:desc, origPrice:originals[_pickedCerealQty], saveAmt:saves[_pickedCerealQty]},'cereal','Brown Rice · '+labels[_pickedCerealQty]);
+}
+
+var _pickedPickle = null;
+var _pickleCartIds = {}; // tracks cart id per pickle name
+
+var _pickleInfo = {
+avakaya:    {name:'Avakaya Mango Pickle', emoji:'🫙', prices:{'500g':349,'1kg':649}},
+pandumirchi:{name:'Pandu Mirchi Pachadi', emoji:'🌶️', prices:{'500g':299,'1kg':549}}
+};
+
+function pickPickle(name, el){
+// Do NOT reset stepper or remove from cart — just switch selection
+document.querySelectorAll('#pickleCardsScroll .var-card').forEach(function(c){c.classList.remove('selected');});
+el.classList.add('selected');
+_pickedPickle = name;
+
+// Update price display for current qty
+var rates = _pickleInfo[name].prices;
+var val = document.getElementById('pickle-price-val');
+
+// Check if THIS variety + CURRENT qty is already in cart
+var cartKey = 'pickle-'+name+'-'+_pickedPickleQty;
+var inCart = cart.find(function(c){ return c.id === cartKey; });
+var btn = document.getElementById('btn-pickle');
+var stepper = document.getElementById('stepper-pickle');
+var countEl = document.getElementById('cs-count-pickle');
+var labelEl = document.getElementById('cs-label-pickle');
+if(inCart){
+if(btn) btn.classList.add('gone');
+if(stepper) stepper.classList.add('show');
+if(countEl) countEl.textContent = inCart.qty;
+if(labelEl) labelEl.textContent = inCart.name + ' · ' + (_pickedPickleQty === '1kg' ? '1 kg jar' : '½ kg jar');
+_stepperItems['pickle'] = cartKey;
+_stepperPrices['pickle'] = {unit: inCart.price};
+if(val) val.textContent = inCart.price * inCart.qty;
+} else {
+if(btn) btn.classList.remove('gone');
+if(stepper) stepper.classList.remove('show');
+_stepperItems['pickle'] = null;
+if(val) val.textContent = rates[_pickedPickleQty];
+}
+}
+
+function addPickleToCart(){
+if(!_pickedPickle){
+alert('Please choose a pickle variety first 🫙');
+return;
+}
+var qtylabels = {'500g':'½ kg jar','1kg':'1 kg jar'};
+var item = _pickleInfo[_pickedPickle];
+var price = item.prices[_pickedPickleQty];
+var cartId = 'pickle-'+_pickedPickle+'-'+_pickedPickleQty;
+addToCart({id:cartId, name:item.name, emoji:item.emoji, price:price, desc:qtylabels[_pickedPickleQty]},'pickle',item.name+' · '+qtylabels[_pickedPickleQty]);
+}
+
+function toggleCat(id){
+var body = document.getElementById(id);
+var arr  = document.getElementById('arr-' + id);
+body.classList.toggle('open');
+arr.classList.toggle('open');
+}
+
+function selectQty(group, qty, el){
+document.querySelectorAll('[id^="'+group+'-qty"]').forEach(function(b){ b.classList.remove('sel'); });
+el.classList.add('sel');
+}
+
+// CART
+var _stepperItems = {};
+var _stepperPrices = {}; // section -> {unit, orig, save}
+
+function addToCart(item, section, label){
+var existing = cart.find(function(c){ return c.id === item.id; });
+if(existing){ existing.qty++; }
+else{ cart.push(Object.assign({qty:1}, item)); }
+updateCartUI();
+if(section){
+_stepperItems[section] = item.id;
+_stepperPrices[section] = {unit: item.price, orig: item.origPrice||null, save: item.saveAmt||null};
+var btn = document.getElementById('btn-'+section);
+var stepper = document.getElementById('stepper-'+section);
+var countEl = document.getElementById('cs-count-'+section);
+var labelEl = document.getElementById('cs-label-'+section);
+if(btn) btn.classList.add('gone');
+if(stepper) stepper.classList.add('show');
+var entry = cart.find(function(c){ return c.id === item.id; });
+var qty = entry ? entry.qty : 1;
+if(countEl) countEl.textContent = qty;
+if(labelEl) labelEl.textContent = label || item.name;
+updatePriceDisplay(section, qty);
+}
+}
+
+function updatePriceDisplay(section, qty){
+var pd = _stepperPrices[section];
+if(!pd) return;
+if(section === 'cereal'){
+var val  = document.getElementById('cereal-price-val');
+var orig = document.getElementById('cereal-price-orig');
+var save = document.getElementById('cereal-price-save');
+if(val) val.textContent = pd.unit * qty;
+if(orig){ orig.textContent = pd.orig ? '₹'+(pd.orig*qty) : ''; orig.style.display = pd.orig ? 'inline' : 'none'; }
+if(save){ save.textContent = pd.save ? 'Save ₹'+(pd.save*qty) : ''; save.style.display = pd.save ? 'inline-flex' : 'none'; }
+} else if(section === 'pickle'){
+var val = document.getElementById('pickle-price-val');
+if(val) val.textContent = pd.unit * qty;
+}
+}
+
+function stepCart(section, delta){
+var id = _stepperItems[section];
+if(!id) return;
+var entry = cart.find(function(c){ return c.id === id; });
+if(!entry) return;
+entry.qty = Math.max(0, entry.qty + delta);
+var countEl = document.getElementById('cs-count-'+section);
+if(entry.qty === 0){
+cart = cart.filter(function(c){ return c.id !== id; });
+_stepperItems[section] = null;
+// Also clean up category tracking ids
+if(section === 'pickle' && _pickedPickle){ _pickleCartIds[_pickedPickle] = null; }
+if(section === 'tree' && _pickedVar){ _stepperItems['tree'] = null; }
+if(section === 'cereal' && _pickedCereal){ _stepperItems['cereal'] = null; }
+var stepper = document.getElementById('stepper-'+section);
+var btn = document.getElementById('btn-'+section);
+if(stepper) stepper.classList.remove('show');
+if(btn) btn.classList.remove('gone');
+// Reset price display to single-unit price
+updatePriceDisplay(section, 1);
+} else {
+if(countEl) countEl.textContent = entry.qty;
+updatePriceDisplay(section, entry.qty);
+}
+updateCartUI();
+}
+
+function resetStepper(section){
+var id = _stepperItems[section];
+if(id){ cart = cart.filter(function(c){ return c.id !== id; }); updateCartUI(); }
+_stepperItems[section] = null;
+var stepper = document.getElementById('stepper-'+section);
+var btn = document.getElementById('btn-'+section);
+if(stepper) stepper.classList.remove('show');
+if(btn) btn.classList.remove('gone');
+}
+
+function removeFromCart(id){
+cart = cart.filter(function(c){ return c.id !== id; });
+updateCartUI();
+}
+
+function updateCartUI(){
+var count = cart.reduce(function(s,c){ return s + c.qty; }, 0);
+document.getElementById('cartCount').textContent = count;
+var stripCount = document.getElementById('cartCountStrip');
+if(stripCount) stripCount.textContent = count;
+
+// Update bottom nav cart badge
+var bnCart = document.getElementById('bn-cart');
+if(bnCart){
+var badge = bnCart.querySelector('.bn-cart-badge');
+if(!badge && count > 0){
+badge = document.createElement('span');
+badge.className = 'bn-cart-badge';
+badge.style.cssText = 'position:absolute;top:4px;right:12px;background:var(--sf);color:#fff;font-size:.5rem;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;';
+bnCart.style.position = 'relative';
+bnCart.appendChild(badge);
+}
+if(badge) badge.textContent = count > 0 ? count : '';
+}
+
+renderCartItems();
+}
+
+function renderCartItems(){
+var el = document.getElementById('cartItems');
+var totalRow = document.getElementById('cartTotalRow');
+if(cart.length === 0){
+el.innerHTML = '<div class="cart-empty">Your cart is empty 🌿<br>Add something from our products!</div>';
+totalRow.style.display = 'none';
+return;
+}
+var total = 0;
+var lines = cart.map(function(c){
+total += c.price * c.qty;
+return '<div class="cart-line">'
++ '<span class="cart-line-emoji">' + c.emoji + '</span>'
++ '<div class="cart-line-info">'
++ '<div class="cart-line-name">' + c.name + '</div>'
++ '<div class="cart-line-sub">' + c.desc + (c.qty > 1 ? ' × ' + c.qty : '') + '</div>'
++ '</div>'
++ '<span class="cart-line-price">₹' + (c.price * c.qty).toLocaleString() + '</span>'
++ '<button class="cart-line-remove" onclick="removeFromCart(\'' + c.id + '\')">✕</button>'
++ '</div>';
+}).join('');
+el.innerHTML = lines;
+document.getElementById('cartTotal').textContent = '₹' + total.toLocaleString();
+totalRow.style.display = 'block';
+}
+
+function openCart(){ document.getElementById('cartDrawer').classList.add('open'); }
+function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); }
+
+</script><div class="intro-popup-backdrop" id="introBackdrop" onclick="closePopup()" style="display:none"></div>
+<div class="intro-popup" id="introPopup"><button class="intro-popup-close" onclick="closePopup()" aria-label="Close">✕</button><div class="intro-popup-eyebrow">Introductory Price</div><div class="intro-popup-price-row"><span class="intro-popup-price">₹999</span><span class="intro-popup-was">₹1,250</span></div><div class="intro-popup-per">per person / year · with co-rent</div><div class="intro-popup-divider"></div><div class="intro-popup-reserve">Rent a tree starting at <strong>₹999</strong> — share with up to 4 people or rent solo for ₹3,999.</div><a href="#" class="intro-popup-cta" onclick="closePopup();openProducts();return false;">Reserve your tree →</a><div class="intro-popup-tag">🤝 Co-rent available · up to 4 people</div>
+</div><div class="bottom-nav" role="navigation" aria-label="Main navigation"><a class="bn-item active" href="#" id="bn-home" onclick="setActive(this)" aria-label="Home"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span>
+Home
+</a><a class="bn-item" href="#" id="bn-shop" onclick="setActive(this);openProducts();return false;" aria-label="Products"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+Products
+</a><a class="bn-item" href="#varieties" id="bn-search" onclick="setActive(this)" aria-label="Search"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+Search
+</a><a class="bn-item" href="#" id="bn-cart" onclick="openCart();return false;" aria-label="Cart"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.98-1.68L23 6H6"/></svg></span>
+Cart
+</a>
+</div><div id="btf-scrim"></div>
+<div id="butterfly"><span class="btf-lid">📦</span></div><div class="products-overlay" id="productsOverlay"><div class="prod-hero"><div><div class="prod-hero-logo"><span class="prod-hero-wordmark">Vruksha</span><span class="logo-emoji-wrap" id="prodEmojiWrap"><span class="logo-emoji e-active">🥭</span><span class="logo-emoji">🌾</span><span class="logo-emoji">🌶️</span></span><span class="logo-flip-wrap prod-hero" id="prodFlipWrap"><span class="logo-flip-word flip-in">వృక్ష</span></span></div><div class="prod-hero-tagline">Mangoes · Pickles · Grains &amp; more</div></div><div class="prod-hero-right"><button class="prod-hero-cart" onclick="openCart()">
+🛒 Cart <span class="cart-count" id="cartCount">0</span></button></div></div><div class="prod-page-header"><button class="prod-page-back" onclick="closeProducts()" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></button><span class="prod-page-title">Our Products</span></div><div class="prod-page-body"><div class="prod-category"><div class="prod-cat-header" onclick="toggleCat('cat-tree')"><span class="prod-cat-icon">🌳</span><span class="prod-cat-name">Rent a Tree</span><span class="prod-cat-arrow open" id="arr-cat-tree">›</span></div><div class="prod-cat-body open" id="cat-tree"><p class="var-section-label">Step 1 — Choose your variety</p><div class="var-cards" id="varCardsScroll"><div class="var-card" id="vc-rasam" onclick="pickVar('rasam',this)"><div class="var-card-img"><img class="rasam-slide active" src="images/tree-rasam-1.jpg" alt="Rasam 1"/><img class="rasam-slide" src="images/tree-rasam-2.jpg" alt="Rasam 2"/><img class="rasam-slide" src="images/tree-rasam-3.jpg" alt="Rasam 3"/></div><div class="var-card-body"><div class="var-card-name">Rasam</div><div class="var-card-sub">Juice mango · first of season · suits all produce types</div><div class="var-card-badge">Apr – Jun</div></div><div class="var-card-check"></div></div><div class="var-card" id="vc-banganapalli" onclick="pickVar('banganapalli',this)"><div class="var-card-img"><img class="bang-slide active" src="images/tree-banganapalli-1.jpg" alt="Banganapalli 1"/><img class="bang-slide" src="images/tree-banganapalli-2.jpg" alt="Banganapalli 2"/><img class="bang-slide" src="images/tree-banganapalli-3.jpg" alt="Banganapalli 3"/></div><div class="var-card-body"><div class="var-card-name">Banganapalli</div><div class="var-card-sub">Cut mango · GI Tagged 2017 · silky fibreless flesh</div><div class="var-card-badge">May – Jun</div></div><div class="var-card-check"></div></div><div class="var-card coming-soon" id="vc-totapuri"><div class="var-card-img"><img src="images/tree-totapuri-1.jpg" alt="Totapuri"/></div><div class="var-card-body"><div class="var-card-name">Totapuri</div><div class="var-card-sub">Best eaten raw · tangy &amp; firm · parrot-beak tip</div><div class="var-card-badge" style="background:var(--sf);color:#fff">Coming soon</div></div><div class="var-card-check"></div></div></div><div class="var-scroll-hint" id="varScrollHint"><div class="vsh-dot on"></div><div class="vsh-dot"></div><div class="vsh-dot"></div></div><p class="var-section-label">Step 2 — Co-rent this tree?</p>
+<div class="corent-toggle-row" id="corentToggleRow" onclick="toggleCorent()">
+<div class="corent-toggle-label">Split the tree with others
+<span>Up to 4 people share one tree &amp; its cost</span></div>
+<div class="corent-toggle-pill" id="corentPill"></div>
+</div>
+<div class="corent-panel" id="corentPanel">
+<div class="corent-slots-label">How many people will share?</div>
+<div class="corent-slots-row">
+<div class="corent-slot-btn sel" id="csb-1" onclick="pickCorent(1,this)"><span class="csb-people">Solo</span><span class="csb-price">₹3,999</span><span class="csb-each">full tree</span></div>
+<div class="corent-slot-btn" id="csb-2" onclick="pickCorent(2,this)"><span class="csb-people">2 people</span><span class="csb-price">₹1,999</span><span class="csb-each">per person</span></div>
+
+<div class="corent-slot-btn" id="csb-4" onclick="pickCorent(4,this)"><span class="csb-people">4 people</span><span class="csb-price">₹999</span><span class="csb-each">per person</span></div>
+</div>
+<div class="corent-map" id="corentMap">
+<div class="corent-map-title">🗺 Who&#39;s on this tree</div>
+<div class="corent-tree-vis"><div class="corent-tree-icon">🌳</div><div class="corent-slots-vis" id="corentSlotsVis"></div></div>
+<div class="corent-status" id="corentStatus"></div>
+</div>
+</div>
+<p class="var-section-label">Step 3 — How would you like to pay?</p><div class="pay-toggle"><button class="pay-opt active" id="pay-reserve" onclick="pickPayment('reserve',this)">Reserve — ₹199</button><button class="pay-opt" id="pay-full" onclick="pickPayment('full',this)">Pay in full</button></div><div class="add-area"><button class="prod-add-btn" id="btn-tree" onclick="addTreeToCart()">Add to Cart</button><div class="cart-stepper" id="stepper-tree"><button class="cs-btn" onclick="stepCart('tree',-1)" aria-label="decrease">−</button><div class="cs-mid"><span class="cs-count" id="cs-count-tree">1</span><span class="cs-label" id="cs-label-tree"></span></div><button class="cs-btn" onclick="stepCart('tree',1)" aria-label="increase">+</button></div></div></div></div><div class="prod-category"><div class="prod-cat-header" onclick="toggleCat('cat-pickle')"><span class="prod-cat-icon">🫙</span><span class="prod-cat-name">Just Pickles</span><span class="prod-cat-arrow" id="arr-cat-pickle">›</span></div><div class="prod-cat-body" id="cat-pickle"><p class="var-section-label">Step 1 — Choose your pickle</p><div class="var-cards" id="pickleCardsScroll"><div class="var-card" id="vc-avakaya" onclick="pickPickle('avakaya',this)"><div class="var-card-img"><img class="avk-slide active" src="images/pickle-avakaya-1.jpg" alt="Avakaya 1"/><img class="avk-slide" src="images/pickle-avakaya-2.jpg" alt="Avakaya 2"/><img class="avk-slide" src="images/pickle-avakaya-3.jpg" alt="Avakaya 3"/></div><div class="var-card-body"><div class="var-card-name">Avakaya</div><div class="var-card-sub">Andhra mango pickle · stone-ground mustard · no preservatives</div><div class="var-card-badge">₹349 · 500g jar</div></div><div class="var-card-check"></div></div><div class="var-card" id="vc-pandumirchi" onclick="pickPickle('pandumirchi',this)"><div class="var-card-img"><img src="images/pickle-pandumirchi-1.jpg" alt="Pandu Mirchi"/></div><div class="var-card-body"><div class="var-card-name">Pandu Mirchi Pachadi</div><div class="var-card-sub">Red chilli pickle · bold &amp; tangy · no preservatives</div><div class="var-card-badge">₹299 · 500g jar</div></div><div class="var-card-check"></div></div></div><p class="var-section-label">Step 2 — Choose quantity</p><div class="qty-row"><button class="qty-btn sel" id="pickle-qty-500g" onclick="pickQty('pickle','500g',this)">½ kg</button><button class="qty-btn" id="pickle-qty-1kg" onclick="pickQty('pickle','1kg',this)">1 kg</button></div><div class="qty-price-display" id="pickle-price-display">₹<span id="pickle-price-val">—</span></div><div class="add-area"><button class="prod-add-btn" id="btn-pickle" onclick="addPickleToCart()">Add to Cart</button><div class="cart-stepper" id="stepper-pickle"><button class="cs-btn" onclick="stepCart('pickle',-1)" aria-label="decrease">−</button><div class="cs-mid"><span class="cs-count" id="cs-count-pickle">1</span><span class="cs-label" id="cs-label-pickle"></span></div><button class="cs-btn" onclick="stepCart('pickle',1)" aria-label="increase">+</button></div></div></div></div><div class="prod-category"><div class="prod-cat-header" onclick="toggleCat('cat-cereal')"><span class="prod-cat-icon">🌾</span><span class="prod-cat-name">Just Cereal</span><span class="prod-cat-arrow" id="arr-cat-cereal">›</span></div><div class="prod-cat-body" id="cat-cereal"><p class="var-section-label">Step 1 — Choose your grain</p><div class="var-cards" id="cerealCardsScroll"><div class="var-card" id="vc-brownrice" onclick="pickCereal('brownrice',this)"><div class="var-card-img"><img src="images/cereal-brownrice-1.jpg" alt="Brown Rice"/></div><div class="var-card-body"><div class="var-card-name">Brown Rice</div><div class="var-card-sub">Whole grain · naturally harvested · rich in fibre</div><div class="var-card-badge">from ₹60 · ½ kg</div></div><div class="var-card-check"></div></div></div><p class="var-section-label">Step 2 — Choose quantity</p><div class="qty-row"><button class="qty-btn sel" id="cereal-qty-500g" onclick="pickQty('cereal','500g',this)">½ kg</button><button class="qty-btn" id="cereal-qty-1kg" onclick="pickQty('cereal','1kg',this)">1 kg</button><button class="qty-btn" id="cereal-qty-2kg" onclick="pickQty('cereal','2kg',this)">2 kg</button><button class="qty-btn" id="cereal-qty-5kg" onclick="pickQty('cereal','5kg',this)">5 kg</button></div><div class="qty-price-display" id="cereal-price-display">₹<span id="cereal-price-val">30</span><span class="qty-price-orig" id="cereal-price-orig"></span><span class="qty-price-save" id="cereal-price-save"></span></div><div class="add-area"><button class="prod-add-btn" id="btn-cereal" onclick="addCerealToCart()">Add to Cart</button><div class="cart-stepper" id="stepper-cereal"><button class="cs-btn" onclick="stepCart('cereal',-1)" aria-label="decrease">−</button><div class="cs-mid"><span class="cs-count" id="cs-count-cereal">1</span><span class="cs-label" id="cs-label-cereal"></span></div><button class="cs-btn" onclick="stepCart('cereal',1)" aria-label="increase">+</button></div></div></div></div>
+<footer style="margin:1.5rem -1.5rem -1.5rem;padding-bottom:80px"><div class="footer-brand"><div class="footer-logo-anim"><span class="footer-logo-fixed">Vruksha</span><span class="footer-emoji-wrap" id="prodFooterEmojiWrap"><span class="footer-emoji fe-active">🥭</span><span class="footer-emoji">🌾</span><span class="footer-emoji">🌶️</span></span><span class="footer-flip-wrap" id="prodFooterFlipWrap"><span class="footer-flip-word ffw-in">వృక్ష</span></span></div><p>From the farm to your table — the way it was always meant to be.</p></div><ul class="flinks"><li><a onclick="openPolicy('pricing');return false;" role="button" style="cursor:pointer">Plans &amp; pricing</a></li><li><a onclick="openPolicy('variety');return false;" role="button" style="cursor:pointer">Our produce</a></li><li><a onclick="openPolicy('variety');return false;" role="button" style="cursor:pointer">Varieties</a></li><li><a onclick="openPolicy('howitworks');return false;" role="button" style="cursor:pointer">How it works</a></li></ul><ul class="flinks"><li><a onclick="openPolicy('about');return false;" role="button" style="cursor:pointer">About this project</a></li><li><a onclick="openPolicy('farmers');return false;" role="button" style="cursor:pointer">For farmers</a></li><li><a onclick="openPolicy('faq');return false;" role="button" style="cursor:pointer">FAQ</a></li><li><a class="contact-link" href="mailto:hello.vruksha@gmail.com">Contact us</a></li></ul><ul class="flinks"><li class="flinks-head">Get in touch</li><li><a class="contact-link" href="tel:+919490926999">📞 +91 94909 26999</a></li><li><a class="contact-link" href="mailto:hello.vruksha@gmail.com">✉️ hello.vruksha@gmail.com</a></li><li><a class="contact-link" href="https://www.instagram.com/_vruksha_india" target="_blank" rel="noopener">📷 @_vruksha_india</a></li></ul><div class="footer-bottom"><span>© 2026 Vruksha. All rights reserved.</span><span>Made with 🥭 in India</span><div class="footer-legal"><a onclick="openPolicy('privacy')" role="button">Privacy Policy</a><a onclick="openPolicy('terms')" role="button">Terms &amp; Conditions</a><a onclick="openPolicy('refund')" role="button">Refund &amp; Cancellation</a><a onclick="openPolicy('shipping')" role="button">Shipping &amp; Delivery</a></div></div></footer>
+</div><div class="cart-drawer" id="cartDrawer"><div class="cart-backdrop" onclick="closeCart()"></div><div class="cart-panel"><div class="cart-panel-handle"></div><div class="cart-panel-title">Your Cart 🛒</div><div id="cartItems"><div class="cart-empty">Your cart is empty 🌿<br>Add something from our products!</div></div><div id="cartTotalRow" style="display:none"><div class="cart-total"><span>Total</span><span id="cartTotal">₹0</span></div><button class="cart-checkout-btn" onclick="alert('Checkout coming soon! 🥭')">Proceed to Pay →</button></div></div>
+</div><script>
+// Avakaya photo slideshow
+(function(){
+var slides = document.querySelectorAll('.avk-slide');
+var dots   = document.querySelectorAll('#avkDots .avk-dot');
+if(!slides.length) return;
+var cur = 0;
+setInterval(function(){
+slides[cur].classList.remove('active');
+dots[cur].classList.remove('on');
+cur = (cur + 1) % slides.length;
+slides[cur].classList.add('active');
+dots[cur].classList.add('on');
+}, 3000);
+})();
+</script>
+<dialog class="policy-dialog" id="policyDialog"><button class="policy-close" onclick="closePolicy()" aria-label="Close">×</button><div class="policy-body" id="policyBody"></div></dialog><div id="policySources" style="display:none" aria-hidden="true"><div id="policy-about"><h2>About this project</h2><p>Vruksha began with a simple ache &mdash; the feeling that somewhere along the way, we lost touch with where our food comes from. Most of us grew up with a mango tree somewhere in the family: a grandparent's backyard, a village summer, the taste of a fruit picked at the exact right moment and eaten warm from the sun. That tree was never just a product. It was a memory, a season, a part of who we were.</p><p>Today, that tree is mostly gone. Mangoes reach us picked too early and ripened with chemicals, stripped of the patience that once made them special. Vruksha is a small, honest attempt to give that back &mdash; to let you have a tree of your own again, cared for with love, and to taste a mango the way it was always meant to taste.</p><p>This is also a personal beginning. Vruksha is my first real step into building something of my own &mdash; not to chase quick profit, but to create genuine trust between the people who grow our food and the people who eat it. It is equal parts terrifying and beautiful, and it feels like a dream I get to build one tree at a time.</p><p>Thank you for being here at the very start. You are not just renting a tree &mdash; you are helping grow something we hope will outlast all of us.</p></div><div id="policy-farmers"><h2>For farmers</h2><p>For too long, the people who grow our food have been the last to be paid fairly. A farmer pours an entire year into a single tree &mdash; the watering, the waiting, the worry over every storm &mdash; and then watches most of the value vanish into the hands of middlemen, traders, and agents before it ever reaches their pocket. The market eats the margin. The farmer is left with scraps.</p><p>We believe that is backwards. At Vruksha, our whole purpose is to put the farmer and the family who eats the fruit on the same side &mdash; farmer to consumer, directly (F2C). No long chain of brokers. No hidden cuts. No one in the middle quietly taking what was never theirs.</p><p>When you rent a tree, the farmer earns a fair, honest price for their care and their craft &mdash; often far more than the wholesale market would ever give them. And because we have removed the layers in between, you receive fresher, better produce, usually for less than you would pay in a store. The farmer wins. You win. Only the middleman misses out.</p><p>This is the heart of what we are building: a fairer, kinder food chain &mdash; one tree, and one family, at a time.</p></div><div id="policy-pricing"><h2>Plans &amp; pricing</h2><p>Rent a mango tree for the season and receive its harvest, delivered to your door. The prices below are for the tree rental itself &mdash; pickles, grains, and other produce are priced separately.</p><table class="policy-yield"><tr><th>Rental plan</th><th>Guaranteed minimum harvest</th><th>Season price</th></tr><tr><td>10 kg plan</td><td>At least 10 kg of mangoes</td><td>₹999</td></tr><tr><td>20 kg plan</td><td>At least 20 kg of mangoes</td><td>₹1,999</td></tr><tr><td>40 kg plan</td><td>At least 40 kg of mangoes</td><td>₹3,999</td></tr></table><p>Reserve any plan today for just <strong>₹199</strong>, with the balance payable before the harvest season begins. If you are not satisfied with your produce, your ₹199 reservation is fully refundable &mdash; see our Refund &amp; Cancellation Policy.</p><p style="font-size:.78rem;color:var(--muted)">Prices are per tree, per season, inclusive of applicable taxes. Plans and prices may be updated from time to time.</p></div><div id="policy-variety"><h2>What we offer</h2><p>Everything at Vruksha begins with the tree &mdash; and grows from there.</p><ul class="policy-offer"><li><strong>Rent a mango tree</strong> &mdash; choose your tree and your favourite variety, and receive its full natural harvest for the season.</li><li><strong>Mango varieties</strong> &mdash; choose from <strong>Banganapalli</strong>, <strong>Totapuri</strong> <em style="opacity:.7">(coming soon)</em>, and <strong>Suvarnarekha (Cheruku Rasalu)</strong>, each with its own character &mdash; from rich and creamy to bright and tangy.</li><li><strong>Pickles</strong> &mdash; traditional, home-style mango pickles made from the same honest fruit. <span class="policy-soon">Available</span></li><li><strong>Brown rice</strong> &mdash; wholesome, naturally grown grains. <span class="policy-soon">Coming soon</span></li></ul></div><div id="policy-howitworks"><h2>How it works</h2><p>Renting a tree with Vruksha is simple, honest, and personal. Here are the key steps:</p><ul class="policy-offer"><li><strong>1. Reserve your tree.</strong> Choose a plan and reserve your tree with just ₹199. This holds a real, living tree in your name for the whole season.</li><li><strong>2. Choose your variety.</strong> Select the mango variety you love, and pay the balance of your plan before the season begins.</li><li><strong>3. We tend it for you.</strong> Our partner farmers care for your tree all season &mdash; watering, nurturing, and protecting it &mdash; and we share updates along the way.</li><li><strong>4. Nature does its work.</strong> Your mangoes are grown naturally and ripened without artificial chemicals such as calcium carbide.</li><li><strong>5. The harvest comes home.</strong> When the fruit is ready, we harvest and deliver it straight to your door. First deliveries begin from April 2027.</li><li><strong>6. Our promise.</strong> You are guaranteed a minimum harvest for your plan, and if you are not satisfied, your ₹199 reservation is refundable.</li></ul></div><div id="policy-faq"><h2>Frequently asked questions</h2><div class="policy-faq"><details><summary>What does it mean to &ldquo;rent&rdquo; a mango tree?</summary><p>You reserve a real, living mango tree on one of our partner farms for the season. Our farmers care for it all year, and you receive its natural harvest, delivered to your home.</p></details><details><summary>How much fruit will I get?</summary><p>Each plan comes with a guaranteed minimum harvest &mdash; at least 10 kg (₹999), 20 kg (₹1,999), or 40 kg (₹3,999). If your tree falls short of its minimum, we make up the difference from our orchard network.</p></details><details><summary>When will I receive my mangoes?</summary><p>Mangoes are delivered in line with the natural harvest season. Our first deliveries begin from April 2027, and we keep you updated throughout.</p></details><details><summary>How do I reserve a tree?</summary><p>Simply pay ₹199 to reserve your tree and plan. The balance of your plan is payable before the harvest season begins.</p></details><details><summary>What if I&rsquo;m not satisfied?</summary><p>If you are not happy with the produce you receive, we will refund your ₹199 reservation amount back to your account. See our Refund &amp; Cancellation Policy for details.</p></details><details><summary>Are the mangoes ripened with chemicals?</summary><p>No. Our mangoes are grown naturally and ripened without artificial ripening agents such as calcium carbide.</p></details><details><summary>Where do you deliver?</summary><p>We currently deliver to major cities across India. When you place an order, we will confirm whether we can reach your location.</p></details><details><summary>How can I pay?</summary><p>Payments are made securely online. You can pay by UPI, debit or credit card, or net banking.</p></details><details><summary>Can I visit my tree?</summary><p>Yes! We welcome members to visit the partner farm by prior appointment to see how their tree is grown and cared for.</p></details><details><summary>Can I share a tree with others?</summary><p>Yes &mdash; our co-rent option lets you split a tree and its cost with friends or family, so more people can enjoy a season of fresh mangoes together.</p></details></div></div><div id="policy-privacy"><h2>Privacy Policy</h2><p class="policy-updated">Last updated: 4 June 2026</p><p>At Vruksha, we believe trust is the root of everything we grow. This Privacy Policy explains what information we collect when you visit our website or rent a tree with us, how we use it, and the choices you have. By using our website, you agree to the practices described here.</p><h3>Information we collect</h3><ul><li><strong>Details you provide:</strong> your name, email address, phone number, and delivery address when you reserve a tree or place an order.</li><li><strong>Order and rental details:</strong> the tree, plan, or produce you choose, and your messages to us.</li><li><strong>Payment information:</strong> all payments are processed securely by our payment partner. We never see or store your card number, UPI PIN, or banking credentials.</li></ul><h3>How we use your information</h3><ul><li>To process your reservations and orders, allocate your tree, and deliver your harvest.</li><li>To send you harvest updates, order confirmations, and support responses.</li><li>To improve our produce, plans, and overall service.</li></ul><h3>Sharing your information</h3><p>We never sell your personal information. We share it only with the partners required to serve you &mdash; such as our payment gateway and delivery partners &mdash; and where the law requires it.</p><h3>Data security</h3><p>We take reasonable steps to keep your information safe from unauthorised access. While no online service can promise perfect security, we work hard to protect what you share with us.</p><h3>Your rights</h3><p>Under India's Digital Personal Data Protection Act, 2023, you may ask us to access, correct, or delete your personal data. Just write to us using the details below.</p><h3>Contact us</h3><p>Email: <a href="mailto:hello.vruksha@gmail.com">hello.vruksha@gmail.com</a><br>Phone: <a href="tel:+919490926999">+91 94909 26999</a><br>Instagram: <a href="https://www.instagram.com/_vruksha_india" target="_blank" rel="noopener">@_vruksha_india</a></p></div><div id="policy-terms"><h2>Terms &amp; Conditions</h2><p class="policy-updated">Last updated: 4 June 2026</p><p>These Terms &amp; Conditions govern your use of the Vruksha website, your rental of our trees, and your purchase of our produce. By reserving a tree or placing an order, you accept these terms.</p><h3>About Vruksha</h3><p>Vruksha lets families rent a real, living mango tree and receive its naturally ripened harvest, alongside farm produce such as pickles and grains. <em>[Replace with your registered business or proprietor name and address.]</em></p><h3>How tree rental works</h3><ul><li>You reserve a tree by paying a reservation amount of ₹199.</li><li>You then choose a rental plan, and the balance for that plan is payable as shown at the time of booking.</li><li>Through the season we share updates on your tree, and at harvest we deliver its mangoes to you.</li></ul><h3>Our harvest guarantee</h3><p>We stand behind every tree we rent. For each rental plan, we guarantee a minimum quantity of mangoes:</p><table class="policy-yield"><tr><th>Rental plan</th><th>Guaranteed minimum harvest</th></tr><tr><td>₹999 rental</td><td>At least 10 kg of mangoes</td></tr><tr><td>₹1,999 rental</td><td>At least 20 kg of mangoes</td></tr><tr><td>₹3,999 rental</td><td>At least 40 kg of mangoes</td></tr></table><p>Mangoes grow by nature, not by machine, so a single tree's yield can vary across seasons. In the rare event that your tree produces less than the guaranteed minimum for your plan, we will make up the shortfall with mangoes of the same variety from our orchard network &mdash; so you always receive at least the quantity promised above.</p><h3>Our produce</h3><p>Our mangoes are grown naturally and ripened without artificial ripening chemicals such as calcium carbide. As with all naturally grown fruit, the size, appearance, colour, taste, and exact harvest dates depend on the season and on natural conditions, and some variation between trees and between seasons is normal.</p><h3>Natural factors and harvest variability</h3><p>A mango tree is a living thing, and its harvest is shaped by rainfall, temperature, flowering, and other natural factors. You will receive at least the guaranteed minimum for your plan as set out above; beyond that minimum, the exact quantity, grade, and timing of your harvest may vary and are not separately guaranteed.</p><h3>Events beyond our control</h3><p>While we honour the guaranteed minimum for your plan under normal growing conditions, events entirely beyond our reasonable control &mdash; including extreme weather, drought, floods, storms, pest or disease outbreaks, crop failure, transport disruptions, or government restrictions &mdash; may delay delivery or, in rare cases, make it impossible. If this happens, we will inform you as soon as we can and offer a reasonable alternative or a refund in line with our Refund &amp; Cancellation Policy. We are not liable for delays or losses caused by such events.</p><h3>The tree and the land</h3><p>Renting a tree gives you the right to receive that tree's harvest for the season you have paid for. It does not transfer ownership of the tree, the land, or any part of the orchard to you. The trees and land remain owned and cared for by Vruksha and our partner farmers, who manage all cultivation.</p><h3>For your own use</h3><p>Our produce is supplied for your personal and household use. It may not be resold or used for commercial purposes without our written consent.</p><h3>Visit and verify</h3><p>We welcome members to visit the partner farm by prior appointment to see how their tree is grown and cared for.</p><h3>Pricing and payments</h3><ul><li>All prices are in Indian Rupees (₹) and include applicable taxes unless stated otherwise.</li><li>Prices and plan availability may change without prior notice.</li><li>Payments are collected through a secure third-party payment gateway, whose terms also apply to your transaction.</li></ul><h3>Your responsibilities</h3><p>Please provide accurate contact and delivery details. We cannot be held responsible for delays or failed deliveries caused by incorrect information.</p><h3>Limitation of liability</h3><p>To the maximum extent permitted by law, our total liability in connection with any order is limited to the amount you have paid for that order. We are not responsible for any indirect or consequential losses.</p><h3>Changes to these terms</h3><p>We may update these terms from time to time. The version published on our website at the time you place your order applies to that order.</p><h3>Governing law</h3><p>These terms are governed by the laws of India, and any disputes are subject to the exclusive jurisdiction of the courts at <em>[your city, state]</em>.</p><h3>Contact us</h3><p>Email: <a href="mailto:hello.vruksha@gmail.com">hello.vruksha@gmail.com</a><br>Phone: <a href="tel:+919490926999">+91 94909 26999</a><br>Instagram: <a href="https://www.instagram.com/_vruksha_india" target="_blank" rel="noopener">@_vruksha_india</a></p></div><div id="policy-refund"><h2>Refund &amp; Cancellation Policy</h2><p class="policy-updated">Last updated: 4 June 2026</p><p>We want every Vruksha member to be happy with their harvest. This policy explains our reservation refund, how cancellations work, and how refunds are processed.</p><h3>Reservation &amp; satisfaction refund</h3><p>You reserve your tree with a payment of ₹199. This reservation is fully protected: if you are not satisfied with the produce you receive, we will refund the ₹199 reservation amount back to your original account. Simply let us know that you are not satisfied, using the contact details below.</p><h3>Cancellations</h3><ul><li>You may cancel your reservation or order at any time before your tree's harvest has been picked and dispatched, by contacting us with your order details.</li><li>Once produce has been harvested, packed, or dispatched for you, that order can no longer be cancelled.</li></ul><h3>Damaged or incorrect produce</h3><p>If your produce arrives damaged, spoiled, or different from what you ordered, please contact us within 48 hours of delivery with a few photographs. We will arrange a replacement or a refund.</p><h3>How refunds are processed</h3><ul><li>Approved refunds are returned to your original payment method (UPI, card, or net banking).</li><li>Refunds are typically completed within 5&ndash;7 business days of approval.</li></ul><h3>How to request a refund</h3><p>Reach us with your order details and we aim to respond within 2 business days.</p><h3>Contact us</h3><p>Email: <a href="mailto:hello.vruksha@gmail.com">hello.vruksha@gmail.com</a><br>Phone: <a href="tel:+919490926999">+91 94909 26999</a><br>Instagram: <a href="https://www.instagram.com/_vruksha_india" target="_blank" rel="noopener">@_vruksha_india</a></p></div><div id="policy-shipping"><h2>Shipping &amp; Delivery Policy</h2><p class="policy-updated">Last updated: 4 June 2026</p><p>How and when your Vruksha produce reaches you.</p><h3>Where we deliver</h3><p>We currently deliver to major cities across India. When you place an order, we will confirm whether we can deliver to your location; if we cannot, we will contact you and arrange a refund.</p><h3>Dispatch and timelines</h3><ul><li>Fresh mangoes are dispatched in line with the natural harvest season, so delivery dates follow the harvest. We keep you updated throughout the season.</li><li>Non-seasonal items such as pickles and grains are typically dispatched within 3&ndash;5 business days of your order.</li></ul><h3>Delivery charges</h3><p>Any applicable delivery charges are shown at checkout before you pay.</p><h3>Tracking and support</h3><p>We share delivery updates by phone or email. For any delivery question, reach out using the details below.</p><h3>Contact us</h3><p>Email: <a href="mailto:hello.vruksha@gmail.com">hello.vruksha@gmail.com</a><br>Phone: <a href="tel:+919490926999">+91 94909 26999</a><br>Instagram: <a href="https://www.instagram.com/_vruksha_india" target="_blank" rel="noopener">@_vruksha_india</a></p></div></div><script>function openPolicy(k){var s=document.getElementById('policy-'+k);if(!s)return;var b=document.getElementById('policyBody');b.innerHTML=s.innerHTML;b.scrollTop=0;var d=document.getElementById('policyDialog');if(typeof d.showModal==='function'){if(!d.open)d.showModal();}else{d.setAttribute('open','');}}function closePolicy(){var d=document.getElementById('policyDialog');if(typeof d.close==='function'){if(d.open)d.close();}else{d.removeAttribute('open');}}(function(){var d=document.getElementById('policyDialog');if(d){d.addEventListener('click',function(e){if(e.target===d)closePolicy();});}})();</script>
+<script>function showGift(k,btn){document.querySelectorAll(".gtab").forEach(function(b){b.classList.remove("on");});btn.classList.add("on");document.querySelectorAll(".gpanel").forEach(function(p){p.classList.remove("on");});var el=document.getElementById("gp-"+k);if(el)el.classList.add("on");}</script>
+</body>
+</html>
