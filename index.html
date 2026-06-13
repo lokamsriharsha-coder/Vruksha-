@@ -3026,6 +3026,26 @@ Cart
 // Point this at your running backend
 var BACKEND_URL = 'http://localhost:3000';
 
+// ── Cashfree API credentials (TEST / Sandbox) ──────────────
+// App ID  : TEST11100624bbf844134de31b083b4742600111
+// Secret  : cfsk_ma_test_e205134b16ac3bb5de3129ea508b8b5a_36a3d398
+// Mode    : TEST  (switch to PROD keys before going live)
+// NOTE: These keys are for your backend server only.
+//       Never use the Secret Key in client-side / browser code.
+var CASHFREE_APP_ID = 'TEST11100624bbf844134de31b083b4742600111';
+// Secret Key must ONLY live in your backend env var (CASHFREE_SECRET_KEY).
+// Never commit it to this file or any public repo.
+// Mode: TEST — swap App ID for your PROD key before going live.
+
+// ── Unique order ID generator ──────────────────────────────
+// Produces e.g. "ORDER-1718023456789-4F2A" — timestamp + random suffix
+// guarantees a fresh unique ID for every transaction.
+function generateOrderId(){
+  var ts  = Date.now().toString();
+  var rnd = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return 'ORDER-' + ts + '-' + rnd;
+}
+
 // ── Open / close helpers ───────────────────────────────────
 function proceedToCheckout(){
   if(!cart || cart.length === 0) return;
@@ -3123,6 +3143,7 @@ async function submitCheckout(){
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        orderId: generateOrderId(),   // unique per transaction
         cart: cartPayload,
         customer: {
           name:  document.getElementById('ckName').value.trim(),
