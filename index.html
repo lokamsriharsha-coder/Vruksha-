@@ -3315,5 +3315,22 @@ window.openPlanWithCorent = function(slots){
   drive();
 };
 </script>
+<script>
+// Show a confirmation banner if returning from a successful payment
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('status') === 'paid') {
+    var bar = document.createElement('div');
+    bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999;background:#2E5A2E;color:#fff;text-align:center;padding:.9rem 1.2rem;font-family:DM Sans,sans-serif;font-size:.92rem;';
+    var orderId = params.get('order') || '';
+    bar.innerHTML = '🌳 Payment successful! Thank you for your order' + (orderId ? ' (' + orderId + ')' : '') + '. We\\'ll be in touch shortly.';
+    document.body.prepend(bar);
+    setTimeout(function(){ bar.style.transition = 'opacity .5s'; bar.style.opacity = '0'; setTimeout(function(){ bar.remove(); }, 500); }, 8000);
+    // Clean the URL so refreshing doesn't re-show the banner
+    var cleanUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+})();
+</script>
 </body>
 </html>
