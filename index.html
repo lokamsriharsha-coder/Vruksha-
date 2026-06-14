@@ -3023,19 +3023,18 @@ Cart
 
 <script>
 // ── Checkout config ────────────────────────────────────────
-// Point this at your running backend
-var BACKEND_URL = 'http://localhost:3000';
-
-// ── Cashfree API credentials (TEST / Sandbox) ──────────────
-// App ID  : TEST11100624bbf844134de31b083b4742600111
-// Secret  : cfsk_ma_test_e205134b16ac3bb5de3129ea508b8b5a_36a3d398
-// Mode    : TEST  (switch to PROD keys before going live)
-// NOTE: These keys are for your backend server only.
-//       Never use the Secret Key in client-side / browser code.
-var CASHFREE_APP_ID = 'TEST11100624bbf844134de31b083b4742600111';
-// Secret Key must ONLY live in your backend env var (CASHFREE_SECRET_KEY).
-// Never commit it to this file or any public repo.
-// Mode: TEST — swap App ID for your PROD key before going live.
+// This MUST point at a deployed backend server (see the
+// vruksha-backend folder), not at wherever this HTML file is hosted.
+//
+// • While testing locally: run `npm start` inside vruksha-backend,
+//   then this localhost URL will work.
+// • For the live site: deploy vruksha-backend (Render/Railway/etc.)
+//   and replace this with its public URL, e.g.
+//   'https://vruksha-backend.onrender.com'
+//
+// Cashfree API keys are NOT needed here — they live only in the
+// backend's .env file and are never sent to the browser.
+var BACKEND_URL = 'https://vruksha-backend-sm25.onrender.com';
 
 // ── Unique order ID generator ──────────────────────────────
 // Produces e.g. "ORDER-1718023456789-4F2A" — timestamp + random suffix
